@@ -1,0 +1,41 @@
+{
+  "name": "typing-library",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@auth/core": "^0.34.2",
+    "@aws-sdk/client-cognito-identity": "^3.787.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.782.0",
+    "aws-amplify": "^6.14.1",
+    "next": "15.2.4",
+    "next-auth": "^4.24.11",
+    "next-international": "^1.3.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.14.3",
+    "@aws-amplify/backend-cli": "^1.5.0",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "aws-cdk": "^2.1003.0",
+    "aws-cdk-lib": "^2.180.0",
+    "constructs": "^10.4.2",
+    "esbuild": "^0.25.2",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.4",
+    "tailwindcss": "^4",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
