@@ -17,13 +17,16 @@ import {
   DEFAULT_APP_SETTINGS,
   DEFAULT_SETTINGS_RECORD_ID,
   getAppSettings,
+  getMyWork,
   getTypingDraft,
   removeTypingDraft,
   saveTypingDraft,
   saveTypingResult,
   type AppSettingsRecord,
+  type MyWorkRecord,
   type TypingDraftRecord,
   type TypingResultRecord,
+  type WorkKind,
 } from '@/shared/db';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
 import { useWorksCatalog } from '@/features/library/useWorksCatalog';
@@ -38,12 +41,13 @@ import {
   pickTypingSettingsSnapshot,
   type CompletedParagraphState,
 } from './session';
-import { countCorrectCharacters, countTypos } from './text';
+import { countCorrectCharacters, countTypos, splitParagraphs } from './text';
 
 const AUTOSAVE_DEBOUNCE_MS = 600;
 
 interface TypingPageProps {
   workId: string;
+  workKind?: WorkKind;
 }
 
 type LoadStatus = 'loading' | 'ready' | 'not-found' | 'error';
@@ -59,12 +63,13 @@ function createDefaultSettingsRecord(): AppSettingsRecord {
   };
 }
 
-export default function TypingPage({ workId }: TypingPageProps) {
+export default function TypingPage({ workId, workKind = 'public' }: TypingPageProps) {
   const t = useI18n();
   const locale = useCurrentLocale();
   const { items, sourceMode, status, worksBaseUrl, errorMessage } = useWorksCatalog();
   const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
+  const [selectedMyWork, setSelectedMyWork] = useState<MyWorkRecord | null>(null);
   const [paragraphs, setParagraphs] = useState<string[]>([]);
   const [paragraphIndex, setParagraphIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
@@ -87,11 +92,25 @@ export default function TypingPage({ workId }: TypingPageProps) {
   const currentParagraphStartedAtRef = useRef<string | null>(null);
   const currentParagraphMaxTyposRef = useRef(0);
 
-  const selectedWork = useMemo(
+  const selectedPublicWork = useMemo(
     () => items.find((item) => item.id === workId) ?? null,
     [items, workId],
   );
-  const draftId = useMemo(() => createTypingDraftId(workId), [workId]);
+  const selectedWork = useMemo(
+    () =>
+      workKind === 'public'
+        ? selectedPublicWork
+        : selectedMyWork
+          ? {
+              id: selectedMyWork.id,
+              title: selectedMyWork.title,
+              author: selectedMyWork.author,
+              source: t('myWorks.meta.localOnly'),
+            }
+          : null,
+    [selectedMyWork, selectedPublicWork, t, workKind],
+  );
+  const draftId = useMemo(() => createTypingDraftId(workKind, workId), [workId, workKind]);
   const summaryReports = finalizedReports ?? reports;
   const currentParagraph = paragraphs[paragraphIndex] ?? '';
   const currentTypoCount = countTypos(currentParagraph, inputValue);
@@ -104,6 +123,9 @@ export default function TypingPage({ workId }: TypingPageProps) {
     inputValue.length === currentParagraph.length;
   const isLastParagraph = paragraphs.length > 0 && paragraphIndex === paragraphs.length - 1;
   const libraryPath = getLocalizedPath(locale, '/library');
+  const myWorksPath = getLocalizedPath(locale, '/my-works');
+  const backPath = workKind === 'my' ? myWorksPath : libraryPath;
+  const backLabel = workKind === 'my' ? t('myWorks.navLabel') : t('typing.backToLibrary');
   const resultsPath = getLocalizedPath(locale, '/results');
   const finalAccuracy =
     savedResult?.accuracy ??
@@ -201,16 +223,18 @@ export default function TypingPage({ workId }: TypingPageProps) {
         return null;
       }
 
+      const publicWork = workKind === 'public' ? selectedPublicWork : null;
+
       const elapsedSnapshot = elapsedOverride ?? getElapsedNow();
 
       return {
         id: draftId,
         workRef: {
-          kind: 'public',
+          kind: workKind,
           id: selectedWork.id,
         },
-        partId: selectedWork.parts?.[0]?.id,
-        workChecksum: selectedWork.checksum,
+        partId: publicWork?.parts?.[0]?.id,
+        workChecksum: publicWork?.checksum,
         paragraphIndex,
         currentParagraphInput: inputValue,
         paragraphReportsSnapshot: summaryReports,
@@ -219,7 +243,17 @@ export default function TypingPage({ workId }: TypingPageProps) {
         updatedAt: new Date().toISOString(),
       } satisfies TypingDraftRecord;
     },
-    [draftId, getElapsedNow, inputValue, paragraphIndex, selectedWork, settingsSnapshot, summaryReports],
+    [
+      draftId,
+      getElapsedNow,
+      inputValue,
+      paragraphIndex,
+      selectedPublicWork,
+      selectedWork,
+      settingsSnapshot,
+      summaryReports,
+      workKind,
+    ],
   );
 
   const persistDraft = useCallback(
@@ -252,6 +286,7 @@ export default function TypingPage({ workId }: TypingPageProps) {
 
       const nextResult = buildTypingResult({
         id: crypto.randomUUID(),
+        workKind,
         workId: selectedWork.id,
         endedAt: new Date().toISOString(),
         elapsedTimeMs: finalElapsedTimeMs,
@@ -273,7 +308,7 @@ export default function TypingPage({ workId }: TypingPageProps) {
         setStorageNotice(t('typing.storage.resultSaveFailed'));
       }
     },
-    [draftId, selectedWork, settingsSnapshot, t],
+    [draftId, selectedWork, settingsSnapshot, t, workKind],
   );
 
   async function handleRetrySaveResult() {
@@ -314,19 +349,14 @@ export default function TypingPage({ workId }: TypingPageProps) {
   }
 
   useEffect(() => {
-    if (status === 'loading') {
+    if (workKind === 'public' && status === 'loading') {
       setLoadStatus('loading');
       return;
     }
 
-    if (status === 'error') {
+    if (workKind === 'public' && status === 'error') {
       setLoadStatus('error');
       setLoadErrorMessage(errorMessage);
-      return;
-    }
-
-    if (!selectedWork) {
-      setLoadStatus('not-found');
       return;
     }
 
@@ -335,40 +365,84 @@ export default function TypingPage({ workId }: TypingPageProps) {
     setLoadStatus('loading');
     setLoadErrorMessage(null);
 
-    loadWorkParagraphs(selectedWork, sourceMode, worksBaseUrl)
-      .then((nextParagraphs) => {
-        if (!isMounted) {
-          return;
-        }
+    const handleReady = (nextParagraphs: string[]) => {
+      if (!isMounted) {
+        return;
+      }
 
-        setParagraphs(nextParagraphs);
-        setParagraphIndex(0);
-        setInputValue('');
-        setReports([]);
-        setFinalizedReports(null);
-        setResumeDraft(null);
-        setSavedResult(null);
-        setResultStatus('idle');
-        setPersistStatus('idle');
-        setLastDraftSavedAt(null);
-        setStorageNotice(null);
-        resetTiming(0);
-        setSessionState('pending');
-        setLoadStatus('ready');
-      })
-      .catch((error) => {
-        if (!isMounted) {
-          return;
-        }
+      setParagraphs(nextParagraphs);
+      setParagraphIndex(0);
+      setInputValue('');
+      setReports([]);
+      setFinalizedReports(null);
+      setResumeDraft(null);
+      setSavedResult(null);
+      setResultStatus('idle');
+      setPersistStatus('idle');
+      setLastDraftSavedAt(null);
+      setStorageNotice(null);
+      resetTiming(0);
+      setSessionState('pending');
+      setLoadStatus('ready');
+    };
 
-        setLoadStatus('error');
-        setLoadErrorMessage(error instanceof Error ? error.message : t('typing.statusError'));
-      });
+    const handleError = (error: unknown) => {
+      if (!isMounted) {
+        return;
+      }
+
+      setLoadStatus('error');
+      setLoadErrorMessage(error instanceof Error ? error.message : t('typing.statusError'));
+    };
+
+    if (workKind === 'my') {
+      getMyWork(workId)
+        .then((record) => {
+          if (!record) {
+            if (isMounted) {
+              setLoadStatus('not-found');
+            }
+            return;
+          }
+
+          setSelectedMyWork(record);
+
+          const nextParagraphs = splitParagraphs(record.content);
+
+          if (nextParagraphs.length === 0) {
+            throw new Error(t('typing.statusNotFound'));
+          }
+
+          handleReady(nextParagraphs);
+        })
+        .catch(handleError);
+    } else {
+      if (!selectedPublicWork) {
+        setLoadStatus('not-found');
+        return;
+      }
+
+      setSelectedMyWork(null);
+
+      loadWorkParagraphs(selectedPublicWork, sourceMode, worksBaseUrl)
+        .then(handleReady)
+        .catch(handleError);
+    }
 
     return () => {
       isMounted = false;
     };
-  }, [errorMessage, resetTiming, selectedWork, sourceMode, status, t, worksBaseUrl]);
+  }, [
+    errorMessage,
+    resetTiming,
+    selectedPublicWork,
+    sourceMode,
+    status,
+    t,
+    workId,
+    workKind,
+    worksBaseUrl,
+  ]);
 
   useEffect(() => {
     if (loadStatus !== 'ready' || sessionState !== 'pending' || !selectedWork) {
@@ -376,7 +450,7 @@ export default function TypingPage({ workId }: TypingPageProps) {
     }
 
     let isMounted = true;
-    const currentWork = selectedWork;
+    const currentPublicWork = selectedPublicWork;
 
     async function prepareSession() {
       try {
@@ -401,9 +475,9 @@ export default function TypingPage({ workId }: TypingPageProps) {
 
         if (
           storedDraft &&
-          currentWork.checksum &&
+          currentPublicWork?.checksum &&
           storedDraft.workChecksum &&
-          storedDraft.workChecksum !== currentWork.checksum
+          storedDraft.workChecksum !== currentPublicWork.checksum
         ) {
           setStorageNotice(t('typing.resume.outdated'));
           setResumeDraft(null);
@@ -432,7 +506,7 @@ export default function TypingPage({ workId }: TypingPageProps) {
     return () => {
       isMounted = false;
     };
-  }, [activateFreshSession, draftId, loadStatus, selectedWork, sessionState, t]);
+  }, [activateFreshSession, draftId, loadStatus, selectedPublicWork, selectedWork, sessionState, t]);
 
   useEffect(() => {
     if (loadStatus === 'ready' && sessionState === 'active') {
@@ -644,10 +718,10 @@ export default function TypingPage({ workId }: TypingPageProps) {
               {t('results.navLabel')}
             </Link>
             <Link
-              href={libraryPath}
+              href={backPath}
               className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
             >
-              {t('typing.backToLibrary')}
+              {backLabel}
             </Link>
           </div>
         </div>
@@ -682,9 +756,11 @@ export default function TypingPage({ workId }: TypingPageProps) {
             <div className="flex flex-col gap-4 border-b border-[color:var(--line)] pb-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
-                  {sourceMode === 'works-origin'
-                    ? t('typing.sourceModeWorks')
-                    : t('typing.sourceModePreview')}
+                  {workKind === 'my'
+                    ? t('typing.sourceModeMy')
+                    : sourceMode === 'works-origin'
+                      ? t('typing.sourceModeWorks')
+                      : t('typing.sourceModePreview')}
                 </p>
                 <p className="mt-2 text-sm leading-7 text-[color:var(--muted)]">
                   {t('typing.focusHint')}
@@ -888,7 +964,9 @@ export default function TypingPage({ workId }: TypingPageProps) {
               <InfoRow
                 label={t('typing.panel.currentMode')}
                 value={
-                  sourceMode === 'works-origin'
+                  workKind === 'my'
+                    ? t('typing.sourceModeMy')
+                    : sourceMode === 'works-origin'
                     ? t('typing.sourceModeWorks')
                     : t('typing.sourceModePreview')
                 }

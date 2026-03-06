@@ -1,4 +1,5 @@
 import { defineMessages } from './messages';
+import { myWorksMessagesKo } from './shared-my-works';
 import { resultsMessagesKo } from './shared-results';
 import { typingMessagesKo } from './shared-typing';
 
@@ -175,6 +176,7 @@ export default defineMessages({
         '내 작품, 결과, 드래프트는 전부 IndexedDB가 기준이다. 전역 메모리 store는 설정 패널 같은 UI 상태에만 사용한다.',
     },
   },
+  myWorks: myWorksMessagesKo,
   results: resultsMessagesKo,
   typing: typingMessagesKo,
 } as const);

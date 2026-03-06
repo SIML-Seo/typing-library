@@ -33,7 +33,14 @@ const paragraphReports: CompletedParagraphState[] = [
 
 describe('createTypingDraftId', () => {
   it('should create a stable draft id for public works', () => {
-    assert.equal(createTypingDraftId('spring-spring-kim-yujeong'), 'typing-draft:public:spring-spring-kim-yujeong');
+    assert.equal(
+      createTypingDraftId('public', 'spring-spring-kim-yujeong'),
+      'typing-draft:public:spring-spring-kim-yujeong',
+    );
+  });
+
+  it('should create a stable draft id for personal works', () => {
+    assert.equal(createTypingDraftId('my', 'my-work-1'), 'typing-draft:my:my-work-1');
   });
 });
 
@@ -55,6 +62,7 @@ describe('buildTypingResult', () => {
   it('should build a persisted result record from session data', () => {
     const result = buildTypingResult({
       id: 'result-1',
+      workKind: 'public',
       workId: 'spring-spring-kim-yujeong',
       endedAt: '2026-03-06T10:01:00.000Z',
       elapsedTimeMs: 60_000,

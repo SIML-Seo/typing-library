@@ -1,4 +1,5 @@
 import { defineMessages } from './messages';
+import { myWorksMessagesEn } from './shared-my-works';
 import { resultsMessagesEn } from './shared-results';
 import { typingMessagesEn } from './shared-typing';
 
@@ -170,6 +171,7 @@ export default defineMessages({
         '我的作品、結果與草稿都以 IndexedDB 為準。記憶體 store 只用於設定面板之類的暫時 UI 狀態。',
     },
   },
+  myWorks: myWorksMessagesEn,
   results: resultsMessagesEn,
   typing: typingMessagesEn,
 } as const);

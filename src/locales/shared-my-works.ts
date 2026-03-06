@@ -1,0 +1,93 @@
+export const myWorksMessagesKo = {
+  navLabel: '내 작품',
+  header: {
+    eyebrow: 'My Works',
+    title: '이 기기에 저장하는 개인 필사 원고',
+    description:
+      '`.txt` 파일이나 붙여넣기 텍스트를 로컬에만 저장하고, 공개 작품과 같은 타이핑 엔진으로 바로 필사할 수 있다.',
+    backToLibrary: '라이브러리로 돌아가기',
+  },
+  form: {
+    title: '새 원고 추가',
+    description:
+      '파일 업로드와 붙여넣기 중 아무 방식이나 써도 같은 구조로 저장된다. 서버 업로드는 하지 않는다.',
+    titleLabel: '제목',
+    titlePlaceholder: '비워 두면 파일명 또는 첫 줄에서 제목을 잡는다',
+    authorLabel: '저자',
+    authorPlaceholder: '선택 입력',
+    contentLabel: '본문',
+    contentPlaceholder: '여기에 직접 붙여넣거나 아래에서 .txt 파일을 선택해라',
+    fileLabel: '.txt 파일 불러오기',
+    fileHint: '파일을 읽으면 본문과 기본 제목을 폼에 채운다.',
+    saveAction: '이 기기에 저장',
+    saving: '저장 중',
+    resetAction: '입력 비우기',
+    success: '내 작품을 이 기기에 저장했다.',
+    error: '내 작품 저장에 실패했다.',
+    emptyContent: '본문이 비어 있다. 최소 한 줄 이상 넣어라.',
+    invalidFile: '`.txt` 파일만 업로드할 수 있다.',
+    fileReadError: '파일을 읽지 못했다.',
+  },
+  list: {
+    title: '저장된 내 작품',
+    description: '수정 기능 없이 저장/삭제/필사 시작만 먼저 제공한다.',
+    emptyTitle: '아직 저장한 내 작품이 없다.',
+    emptyBody: '텍스트를 하나 저장하면 여기서 바로 필사를 시작할 수 있다.',
+    startTyping: '필사 시작',
+    deleteAction: '삭제',
+    deleting: '삭제 중',
+    deleteError: '내 작품 삭제에 실패했다.',
+    authorFallback: '저자 정보 없음',
+    updatedAt: '최근 저장',
+  },
+  meta: {
+    localOnly: '이 기기 로컬 저장',
+  },
+} as const;
+
+export const myWorksMessagesEn = {
+  navLabel: 'My works',
+  header: {
+    eyebrow: 'My Works',
+    title: 'Personal typing manuscripts stored on this device',
+    description:
+      'Save `.txt` files or pasted text locally only, then type them with the same engine used for public works.',
+    backToLibrary: 'Back to library',
+  },
+  form: {
+    title: 'Add a new manuscript',
+    description:
+      'File upload and paste both end up in the same local record structure. Nothing is uploaded to a server.',
+    titleLabel: 'Title',
+    titlePlaceholder: 'Leave blank to derive the title from the file name or first line',
+    authorLabel: 'Author',
+    authorPlaceholder: 'Optional',
+    contentLabel: 'Content',
+    contentPlaceholder: 'Paste text here or load a `.txt` file below',
+    fileLabel: 'Load a `.txt` file',
+    fileHint: 'Loading a file fills the content field and a default title.',
+    saveAction: 'Save on this device',
+    saving: 'Saving',
+    resetAction: 'Clear form',
+    success: 'The personal work was saved on this device.',
+    error: 'Saving the personal work failed.',
+    emptyContent: 'The content is empty. Add at least one line.',
+    invalidFile: 'Only `.txt` files are supported.',
+    fileReadError: 'The file could not be read.',
+  },
+  list: {
+    title: 'Saved personal works',
+    description: 'For now the page supports save, delete, and start typing.',
+    emptyTitle: 'No personal works saved yet.',
+    emptyBody: 'Once you save one text, you can start typing it directly from this list.',
+    startTyping: 'Start typing',
+    deleteAction: 'Delete',
+    deleting: 'Deleting',
+    deleteError: 'Deleting the personal work failed.',
+    authorFallback: 'No author info',
+    updatedAt: 'Last saved',
+  },
+  meta: {
+    localOnly: 'Stored locally on this device',
+  },
+} as const;

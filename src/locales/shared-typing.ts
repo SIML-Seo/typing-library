@@ -12,6 +12,7 @@ export const typingMessagesKo = {
   clickToFocus: '클릭해서 포커스',
   sourceModePreview: '프리뷰 텍스트',
   sourceModeWorks: 'works origin 텍스트',
+  sourceModeMy: '내 작품 로컬 텍스트',
   stats: {
     paragraph: '문단',
     accuracy: '현재 정확도',
@@ -83,6 +84,7 @@ export const typingMessagesEn = {
   clickToFocus: 'Click to focus',
   sourceModePreview: 'Preview text',
   sourceModeWorks: 'Works origin text',
+  sourceModeMy: 'Personal local text',
   stats: {
     paragraph: 'Paragraph',
     accuracy: 'Current accuracy',

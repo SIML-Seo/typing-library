@@ -1,4 +1,5 @@
 import { defineMessages } from './messages';
+import { myWorksMessagesEn } from './shared-my-works';
 import { resultsMessagesEn } from './shared-results';
 import { typingMessagesEn } from './shared-typing';
 
@@ -176,6 +177,7 @@ export default defineMessages({
         'Eigene Werke, Ergebnisse und Entwürfe verwenden IndexedDB als Quelle der Wahrheit. Der In-Memory-Store bleibt auf temporäre UI-Zustände beschränkt.',
     },
   },
+  myWorks: myWorksMessagesEn,
   results: resultsMessagesEn,
   typing: typingMessagesEn,
 } as const);

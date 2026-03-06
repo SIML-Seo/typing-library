@@ -1,4 +1,5 @@
 import type { AppSettingsRecord, ParagraphReport, TypingResultRecord } from '@/shared/db';
+import type { WorkKind } from '@/shared/db';
 
 export interface CompletedParagraphState {
   paragraphIndex: number;
@@ -10,8 +11,8 @@ export interface CompletedParagraphState {
   endedAt: string;
 }
 
-export function createTypingDraftId(workId: string) {
-  return `typing-draft:public:${workId}`;
+export function createTypingDraftId(workKind: WorkKind, workId: string) {
+  return `typing-draft:${workKind}:${workId}`;
 }
 
 export function pickTypingSettingsSnapshot(
@@ -74,6 +75,7 @@ export function calculateTotalTypos(paragraphs: CompletedParagraphState[]) {
 
 export function buildTypingResult(params: {
   id: string;
+  workKind: WorkKind;
   workId: string;
   endedAt: string;
   elapsedTimeMs: number;
@@ -83,13 +85,13 @@ export function buildTypingResult(params: {
   >;
   paragraphs: CompletedParagraphState[];
 }): TypingResultRecord {
-  const { id, workId, endedAt, elapsedTimeMs, settings, paragraphs } = params;
+  const { id, workKind, workId, endedAt, elapsedTimeMs, settings, paragraphs } = params;
   const endedAtMs = new Date(endedAt).getTime();
 
   return {
     id,
     workRef: {
-      kind: 'public',
+      kind: workKind,
       id: workId,
     },
     startedAt: new Date(endedAtMs - elapsedTimeMs).toISOString(),

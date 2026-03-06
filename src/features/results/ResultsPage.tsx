@@ -73,6 +73,7 @@ export default function ResultsPage() {
   const overview = useMemo(() => summarizeResults(entries), [entries]);
   const libraryPath = getLocalizedPath(locale, '/library');
   const landingPath = getLocalizedPath(locale, '/');
+  const myWorksPath = getLocalizedPath(locale, '/my-works');
 
   return (
     <div className="min-h-screen">
@@ -92,6 +93,12 @@ export default function ResultsPage() {
 
           <div className="flex items-center gap-3">
             <LocaleSwitcher />
+            <Link
+              href={myWorksPath}
+              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+            >
+              {t('myWorks.navLabel')}
+            </Link>
             <Link
               href={libraryPath}
               className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
