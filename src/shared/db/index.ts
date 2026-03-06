@@ -33,6 +33,7 @@ export type {
   ParagraphReport,
   TypingDraftParagraphReport,
   TypingDraftRecord,
+  TypingMismatchSegment,
   TypingResultRecord,
   TypoDisplayMode,
   VisualFilterSettings,

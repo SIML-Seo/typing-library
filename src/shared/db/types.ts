@@ -24,11 +24,19 @@ export interface ParagraphReport {
   correctedTypoCount: number;
   startedAt: string;
   endedAt: string;
+  mismatchSegments?: TypingMismatchSegment[];
 }
 
 export interface TypingDraftParagraphReport extends ParagraphReport {
   typedLength: number;
   correctCharacterCount: number;
+}
+
+export interface TypingMismatchSegment {
+  start: number;
+  end: number;
+  expected: string;
+  actual: string;
 }
 
 export interface MyWorkRecord {

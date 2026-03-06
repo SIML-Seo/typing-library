@@ -58,6 +58,7 @@ import {
   isCharacterMatch,
   splitParagraphs,
 } from './text';
+import { buildTypingMismatchSegments, formatVisibleText } from './paragraph-report';
 import { buildVisualFilterValue, hasActiveVisualFilter } from './visual-filters';
 
 const AUTOSAVE_DEBOUNCE_MS = 600;
@@ -72,6 +73,13 @@ type SessionState = 'pending' | 'prompt' | 'active' | 'completed';
 type PersistStatus = 'idle' | 'saving' | 'saved' | 'error';
 type ResultStatus = 'idle' | 'saving' | 'saved' | 'error';
 type SettingsStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+interface PendingParagraphReportState {
+  paragraph: CompletedParagraphState;
+  nextReports: CompletedParagraphState[];
+  elapsedTimeMs: number;
+  isLastParagraph: boolean;
+}
 
 function createDefaultSettingsRecord(): AppSettingsRecord {
   return {
@@ -109,6 +117,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const [typingSessionId, setTypingSessionId] = useState('');
   const [hasSentTypingStart, setHasSentTypingStart] = useState(false);
   const [elapsedTimeMs, setElapsedTimeMs] = useState(0);
+  const [pendingParagraphReport, setPendingParagraphReport] =
+    useState<PendingParagraphReportState | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const elapsedBaseMsRef = useRef(0);
   const activeStartedAtMsRef = useRef<number | null>(null);
@@ -286,7 +296,12 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     (draft: TypingDraftRecord) => {
       setParagraphIndex(draft.paragraphIndex);
       setInputValue(draft.currentParagraphInput);
-      setReports(draft.paragraphReportsSnapshot ?? []);
+      setReports(
+        (draft.paragraphReportsSnapshot ?? []).map((report) => ({
+          ...report,
+          mismatchSegments: report.mismatchSegments ?? [],
+        })),
+      );
       setFinalizedReports(null);
       setResumeDraft(null);
       setSavedResult(null);
@@ -436,6 +451,31 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     }
 
     activateFreshSession();
+  }
+
+  function handleConfirmParagraphReport() {
+    if (!pendingParagraphReport) {
+      return;
+    }
+
+    const { elapsedTimeMs: completedElapsedTimeMs, isLastParagraph, nextReports } =
+      pendingParagraphReport;
+
+    setPendingParagraphReport(null);
+    setReports(nextReports);
+    setPersistStatus('idle');
+
+    if (isLastParagraph) {
+      setFinalizedReports(nextReports);
+      setSessionState('completed');
+      void finalizeSession(nextReports, completedElapsedTimeMs);
+      return;
+    }
+
+    const nextParagraphIndex = paragraphIndex + 1;
+    setParagraphIndex(nextParagraphIndex);
+    setInputValue('');
+    resetParagraphTracking(nextParagraphIndex, '');
   }
 
   async function handleSettingsChange(
@@ -641,7 +681,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   }, [loadStatus, paragraphIndex, sessionState]);
 
   useEffect(() => {
-    if (sessionState !== 'active') {
+    if (sessionState !== 'active' || pendingParagraphReport) {
       return;
     }
 
@@ -656,7 +696,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [getElapsedNow, sessionState]);
+  }, [getElapsedNow, pendingParagraphReport, sessionState]);
 
   useEffect(() => {
     if (sessionState !== 'active') {
@@ -712,7 +752,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       window.removeEventListener('pagehide', flushDraft);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [loadStatus, pauseTiming, persistDraft, sessionState]);
+  }, [loadStatus, pauseTiming, pendingParagraphReport, persistDraft, sessionState]);
 
   function handleBeforeInput(event: FormEvent<HTMLTextAreaElement>) {
     const nativeEvent = event.nativeEvent as InputEvent;
@@ -751,7 +791,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   }
 
   function handleAdvance() {
-    if (!canAdvance) {
+    if (!canAdvance || pendingParagraphReport) {
       return;
     }
 
@@ -764,6 +804,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       correctCharacterCount: correctCharacters,
       startedAt: currentParagraphStartedAtRef.current ?? endedAt,
       endedAt,
+      mismatchSegments: buildTypingMismatchSegments(currentParagraph, inputValue, judgeOptions),
     };
     const nextReports = [...reports, completedParagraph];
     const finalElapsedTimeMs = pauseTiming();
@@ -777,20 +818,12 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       }),
     );
 
-    setReports(nextReports);
-    setPersistStatus('idle');
-
-    if (isLastParagraph) {
-      setFinalizedReports(nextReports);
-      setSessionState('completed');
-      void finalizeSession(nextReports, finalElapsedTimeMs);
-      return;
-    }
-
-    const nextParagraphIndex = paragraphIndex + 1;
-    setParagraphIndex(nextParagraphIndex);
-    setInputValue('');
-    resetParagraphTracking(nextParagraphIndex, '');
+    setPendingParagraphReport({
+      paragraph: completedParagraph,
+      nextReports,
+      elapsedTimeMs: finalElapsedTimeMs,
+      isLastParagraph,
+    });
   }
 
   function renderOverlay(reference: string, typed: string) {
@@ -1016,7 +1049,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                     spellCheck={false}
                     autoCapitalize="off"
                     autoCorrect="off"
-                    readOnly={sessionState !== 'active'}
+                    readOnly={sessionState !== 'active' || pendingParagraphReport !== null}
                     className="absolute inset-0 h-full w-full resize-none opacity-0"
                     aria-label={t('typing.startTyping')}
                   />
@@ -1050,9 +1083,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       disabled={!canAdvance}
                       className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-[rgba(161,68,49,0.35)] hover:enabled:bg-[color:var(--accent-strong)]"
                     >
-                      {isLastParagraph
-                        ? t('typing.actions.finishSession')
-                        : t('typing.actions.nextParagraph')}
+                      {t('typing.actions.reviewParagraph')}
                     </button>
                   </div>
                 ) : null}
@@ -1206,6 +1237,89 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
           </div>
         </aside>
       </main>
+
+      {pendingParagraphReport ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(9,7,6,0.48)] px-4 pb-6 pt-20 backdrop-blur-sm">
+          <section className="w-full max-w-4xl rounded-[2rem] border border-[color:var(--line)] bg-[color:var(--page-bg)] p-6 shadow-[0_30px_100px_rgba(14,10,7,0.28)]">
+            <div className="flex flex-col gap-4 border-b border-[color:var(--line)] pb-5 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
+                  {t('typing.report.title')}
+                </p>
+                <h2 className="mt-3 text-3xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+                  {t('typing.stats.paragraph')} {pendingParagraphReport.paragraph.paragraphIndex + 1}
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+                  {t('typing.report.subtitle')}
+                </p>
+              </div>
+
+              <div className="rounded-[1.4rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-4 text-right">
+                <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
+                  {t('typing.report.typoCount')}
+                </p>
+                <p className="mt-2 text-3xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+                  {pendingParagraphReport.paragraph.typoCount}
+                </p>
+              </div>
+            </div>
+
+            {pendingParagraphReport.paragraph.mismatchSegments.length === 0 ? (
+              <div className="mt-6 rounded-[1.6rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-10 text-center">
+                <h3 className="text-2xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+                  {t('typing.report.cleanTitle')}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+                  {t('typing.report.cleanBody')}
+                </p>
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                {pendingParagraphReport.paragraph.mismatchSegments.map((segment) => (
+                  <article
+                    key={`${segment.start}-${segment.end}`}
+                    className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5"
+                  >
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                      {segment.start === segment.end
+                        ? t('typing.report.mismatchRangeSingle', {
+                            start: segment.start + 1,
+                          })
+                        : t('typing.report.mismatchRangeMulti', {
+                            start: segment.start + 1,
+                            end: segment.end + 1,
+                          })}
+                    </p>
+                    <div className="mt-4 space-y-3">
+                      <MismatchValue
+                        label={t('typing.report.expectedLabel')}
+                        value={segment.expected}
+                      />
+                      <MismatchValue
+                        label={t('typing.report.actualLabel')}
+                        value={segment.actual}
+                        emptyLabel={t('typing.report.emptyActual')}
+                      />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={handleConfirmParagraphReport}
+                className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-strong)]"
+              >
+                {pendingParagraphReport.isLastParagraph
+                  ? t('typing.actions.finishSession')
+                  : t('typing.actions.nextParagraph')}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       {isSettingsPanelOpen ? (
         <div className="fixed inset-0 z-40 flex justify-end bg-[rgba(9,7,6,0.48)] backdrop-blur-sm">
@@ -1633,5 +1747,28 @@ function FilterSlider({
         className="mt-4 block w-full accent-[color:var(--accent)]"
       />
     </label>
+  );
+}
+
+function MismatchValue({
+  label,
+  value,
+  emptyLabel,
+}: {
+  label: string;
+  value: string;
+  emptyLabel?: string;
+}) {
+  const visibleValue = value.length > 0 ? formatVisibleText(value) : emptyLabel ?? '';
+
+  return (
+    <div className="rounded-[1.1rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft-strong)] p-4">
+      <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
+        {label}
+      </p>
+      <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-[color:var(--foreground)]">
+        {visibleValue}
+      </pre>
+    </div>
   );
 }

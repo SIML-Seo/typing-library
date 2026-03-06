@@ -1,4 +1,9 @@
-import type { AppSettingsRecord, ParagraphReport, TypingResultRecord } from '@/shared/db';
+import type {
+  AppSettingsRecord,
+  ParagraphReport,
+  TypingMismatchSegment,
+  TypingResultRecord,
+} from '@/shared/db';
 import type { WorkKind } from '@/shared/db';
 
 export interface CompletedParagraphState {
@@ -9,6 +14,7 @@ export interface CompletedParagraphState {
   correctCharacterCount: number;
   startedAt: string;
   endedAt: string;
+  mismatchSegments: TypingMismatchSegment[];
 }
 
 export function createTypingDraftId(workKind: WorkKind, workId: string) {
@@ -32,12 +38,13 @@ export function pickTypingSettingsSnapshot(
 
 export function toParagraphReports(paragraphs: CompletedParagraphState[]): ParagraphReport[] {
   return paragraphs.map(
-    ({ paragraphIndex, typoCount, correctedTypoCount, startedAt, endedAt }) => ({
+    ({ paragraphIndex, typoCount, correctedTypoCount, startedAt, endedAt, mismatchSegments }) => ({
       paragraphIndex,
       typoCount,
       correctedTypoCount,
       startedAt,
       endedAt,
+      mismatchSegments,
     }),
   );
 }

@@ -19,6 +19,7 @@ const paragraphReports: CompletedParagraphState[] = [
     correctCharacterCount: 24,
     startedAt: '2026-03-06T10:00:00.000Z',
     endedAt: '2026-03-06T10:00:30.000Z',
+    mismatchSegments: [],
   },
   {
     paragraphIndex: 1,
@@ -28,6 +29,7 @@ const paragraphReports: CompletedParagraphState[] = [
     correctCharacterCount: 23,
     startedAt: '2026-03-06T10:00:31.000Z',
     endedAt: '2026-03-06T10:01:00.000Z',
+    mismatchSegments: [],
   },
 ];
 
