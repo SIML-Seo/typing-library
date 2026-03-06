@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { countCorrectCharacters, countTypos, splitParagraphs } from './text';
+import {
+  countCorrectCharacters,
+  countTypos,
+  isCharacterMatch,
+  splitParagraphs,
+} from './text';
 
 describe('splitParagraphs', () => {
   it('should normalize windows line breaks and split on blank lines', () => {
@@ -28,6 +33,13 @@ describe('countTypos', () => {
   it('should count extra input beyond the reference length as typos', () => {
     assert.equal(countTypos('abc', 'axcd'), 2);
   });
+
+  it('should ignore punctuation and letter case when the option is off', () => {
+    assert.equal(
+      countTypos('Hello, World!', 'hello. world?', { punctuationAndCaseStrict: false }),
+      0,
+    );
+  });
 });
 
 describe('countCorrectCharacters', () => {
@@ -37,5 +49,25 @@ describe('countCorrectCharacters', () => {
 
   it('should ignore extra mismatched characters', () => {
     assert.equal(countCorrectCharacters('abc', 'axcd'), 2);
+  });
+
+  it('should treat punctuation and case differences as correct when the option is off', () => {
+    assert.equal(
+      countCorrectCharacters('Hello, World!', 'hello. world?', {
+        punctuationAndCaseStrict: false,
+      }),
+      13,
+    );
+  });
+});
+
+describe('isCharacterMatch', () => {
+  it('should keep whitespace strict even when punctuation and case matching are relaxed', () => {
+    assert.equal(isCharacterMatch(' ', '\n', { punctuationAndCaseStrict: false }), false);
+  });
+
+  it('should require both characters to be punctuation when punctuation matching is relaxed', () => {
+    assert.equal(isCharacterMatch('.', ',', { punctuationAndCaseStrict: false }), true);
+    assert.equal(isCharacterMatch('.', 'a', { punctuationAndCaseStrict: false }), false);
   });
 });

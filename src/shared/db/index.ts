@@ -21,12 +21,15 @@ export {
 } from './typing-results-repository';
 
 export type {
+  AppTheme,
   AppSettingsRecord,
+  FontSize,
   MyWorkRecord,
   ParagraphReport,
   TypingDraftParagraphReport,
   TypingDraftRecord,
   TypingResultRecord,
+  TypoDisplayMode,
   WorkKind,
   WorkRef,
 } from './types';

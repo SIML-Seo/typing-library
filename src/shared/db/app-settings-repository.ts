@@ -7,7 +7,7 @@ export const DEFAULT_APP_SETTINGS = {
   theme: 'paper',
   fontSize: 'md',
   typoDisplayMode: 'inline-red' as const,
-};
+} satisfies Omit<AppSettingsRecord, 'id' | 'updatedAt'>;
 
 export async function getAppSettings() {
   const stored = await getRecord<AppSettingsRecord>(

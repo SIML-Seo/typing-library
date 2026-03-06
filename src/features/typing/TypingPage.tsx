@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ChangeEvent,
   type FormEvent,
   type ReactNode,
@@ -20,6 +21,7 @@ import {
   getMyWork,
   getTypingDraft,
   removeTypingDraft,
+  saveAppSettings,
   saveTypingDraft,
   saveTypingResult,
   type AppSettingsRecord,
@@ -29,6 +31,7 @@ import {
   type WorkKind,
 } from '@/shared/db';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
+import { useUiStore } from '@/shared/store';
 import { useWorksCatalog } from '@/features/library/useWorksCatalog';
 import { loadWorkParagraphs } from './load-work-paragraphs';
 import {
@@ -41,7 +44,12 @@ import {
   pickTypingSettingsSnapshot,
   type CompletedParagraphState,
 } from './session';
-import { countCorrectCharacters, countTypos, splitParagraphs } from './text';
+import {
+  countCorrectCharacters,
+  countTypos,
+  isCharacterMatch,
+  splitParagraphs,
+} from './text';
 
 const AUTOSAVE_DEBOUNCE_MS = 600;
 
@@ -54,6 +62,7 @@ type LoadStatus = 'loading' | 'ready' | 'not-found' | 'error';
 type SessionState = 'pending' | 'prompt' | 'active' | 'completed';
 type PersistStatus = 'idle' | 'saving' | 'saved' | 'error';
 type ResultStatus = 'idle' | 'saving' | 'saved' | 'error';
+type SettingsStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 function createDefaultSettingsRecord(): AppSettingsRecord {
   return {
@@ -67,6 +76,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const t = useI18n();
   const locale = useCurrentLocale();
   const { items, sourceMode, status, worksBaseUrl, errorMessage } = useWorksCatalog();
+  const { isSettingsPanelOpen, setSettingsPanelOpen } = useUiStore();
   const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const [selectedMyWork, setSelectedMyWork] = useState<MyWorkRecord | null>(null);
@@ -84,6 +94,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const [persistStatus, setPersistStatus] = useState<PersistStatus>('idle');
   const [lastDraftSavedAt, setLastDraftSavedAt] = useState<string | null>(null);
   const [resultStatus, setResultStatus] = useState<ResultStatus>('idle');
+  const [settingsStatus, setSettingsStatus] = useState<SettingsStatus>('idle');
+  const [settingsMessage, setSettingsMessage] = useState<string | null>(null);
   const [savedResult, setSavedResult] = useState<TypingResultRecord | null>(null);
   const [elapsedTimeMs, setElapsedTimeMs] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -113,8 +125,21 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const draftId = useMemo(() => createTypingDraftId(workKind, workId), [workId, workKind]);
   const summaryReports = finalizedReports ?? reports;
   const currentParagraph = paragraphs[paragraphIndex] ?? '';
-  const currentTypoCount = countTypos(currentParagraph, inputValue);
-  const correctCharacters = countCorrectCharacters(currentParagraph, inputValue);
+  const judgeOptions = useMemo(
+    () => ({
+      punctuationAndCaseStrict: settingsSnapshot.punctuationAndCaseStrict,
+    }),
+    [settingsSnapshot.punctuationAndCaseStrict],
+  );
+  const isDarkTheme = settingsSnapshot.theme === 'dark';
+  const fontSizeClassName =
+    settingsSnapshot.fontSize === 'sm'
+      ? 'text-[15px] leading-7'
+      : settingsSnapshot.fontSize === 'lg'
+        ? 'text-[20px] leading-9'
+        : 'text-[17px] leading-8';
+  const currentTypoCount = countTypos(currentParagraph, inputValue, judgeOptions);
+  const correctCharacters = countCorrectCharacters(currentParagraph, inputValue, judgeOptions);
   const currentAccuracy =
     inputValue.length > 0 ? Math.round((correctCharacters / inputValue.length) * 1000) / 10 : null;
   const canAdvance =
@@ -133,6 +158,23 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const finalWpm =
     savedResult?.wpm ?? (summaryReports.length > 0 ? calculateOverallWpm(summaryReports, elapsedTimeMs) : null);
   const totalTypos = summaryReports.length > 0 ? calculateTotalTypos(summaryReports) : null;
+  const themeStyles = useMemo(
+    () =>
+      ({
+        '--page-bg': isDarkTheme ? '#0f0d0b' : 'var(--background)',
+        '--header-bg': isDarkTheme ? 'rgba(18,14,11,0.92)' : 'rgba(244,239,230,0.88)',
+        '--card-bg': isDarkTheme ? 'rgba(28,23,19,0.9)' : 'rgba(255,255,255,0.68)',
+        '--card-bg-strong': isDarkTheme
+          ? 'linear-gradient(180deg,rgba(28,23,19,0.96),rgba(21,17,14,0.96))'
+          : 'linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,243,236,0.88))',
+        '--card-bg-soft': isDarkTheme ? 'rgba(28,23,19,0.76)' : 'rgba(255,255,255,0.72)',
+        '--card-bg-soft-strong': isDarkTheme ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.62)',
+        '--typing-ghost': isDarkTheme ? '#7f7064' : '#8f7c6f',
+        '--typing-ok': isDarkTheme ? '#f4e9dd' : '#f8f0e8',
+        '--typing-error': '#de6e64',
+      }) as CSSProperties,
+    [isDarkTheme],
+  );
 
   const getElapsedNow = useCallback(() => {
     const activeStartedAt = activeStartedAtMsRef.current;
@@ -338,6 +380,30 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     }
 
     activateFreshSession();
+  }
+
+  async function handleSettingsChange(
+    patch: Partial<Omit<AppSettingsRecord, 'id' | 'updatedAt'>>,
+  ) {
+    const optimisticRecord: AppSettingsRecord = {
+      ...settingsSnapshot,
+      ...patch,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSettingsSnapshot(optimisticRecord);
+    setSettingsStatus('saving');
+    setSettingsMessage(null);
+
+    try {
+      const savedSettings = await saveAppSettings(patch);
+      setSettingsSnapshot(savedSettings);
+      setSettingsStatus('saved');
+      setSettingsMessage(t('typing.settings.saved'));
+    } catch {
+      setSettingsStatus('error');
+      setSettingsMessage(t('typing.settings.saveError'));
+    }
   }
 
   function handleContinueDraft() {
@@ -552,7 +618,16 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [inputValue, loadStatus, paragraphIndex, persistDraft, reports, sessionState, summaryReports]);
+  }, [
+    inputValue,
+    loadStatus,
+    paragraphIndex,
+    persistDraft,
+    reports,
+    sessionState,
+    settingsSnapshot,
+    summaryReports,
+  ]);
 
   useEffect(() => {
     if (loadStatus !== 'ready' || sessionState !== 'active') {
@@ -654,7 +729,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     for (let index = 0; index < typed.length; index += 1) {
       const character = typed[index];
       const expected = reference[index];
-      const isCorrect = character === expected;
+      const isCorrect = isCharacterMatch(expected, character, judgeOptions);
       const key = `${index}-${character}`;
 
       if (character === '\n') {
@@ -665,7 +740,13 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       nodes.push(
         <span
           key={key}
-          className={isCorrect ? 'text-[color:#f8f0e8]' : 'text-[color:#de6e64]'}
+          className={
+            isCorrect
+              ? 'text-[color:var(--typing-ok)]'
+              : settingsSnapshot.typoDisplayMode === 'underline-red'
+                ? 'text-[color:var(--typing-ok)] underline decoration-[color:var(--typing-error)] decoration-2 underline-offset-[0.18em]'
+                : 'text-[color:var(--typing-error)]'
+          }
         >
           {character === ' ' ? '\u00A0' : character}
         </span>,
@@ -694,8 +775,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
           : t('typing.panel.autosaveIdle');
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:rgba(244,239,230,0.88)] backdrop-blur">
+    <div className="min-h-screen bg-[color:var(--page-bg)]" style={themeStyles}>
+      <header className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:var(--header-bg)] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 lg:px-10">
           <div>
             <p className="text-[11px] uppercase tracking-[0.28em] text-[color:var(--accent)]">
@@ -711,15 +792,22 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
           <div className="flex items-center gap-3">
             <LocaleSwitcher />
+            <button
+              type="button"
+              onClick={() => setSettingsPanelOpen(true)}
+              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+            >
+              {t('typing.settings.open')}
+            </button>
             <Link
               href={resultsPath}
-              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
             >
               {t('results.navLabel')}
             </Link>
             <Link
               href={backPath}
-              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
             >
               {backLabel}
             </Link>
@@ -752,7 +840,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
             />
           </div>
 
-          <section className="rounded-[2rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,243,236,0.88))] p-6 shadow-[0_24px_90px_rgba(60,34,24,0.08)]">
+          <section className="rounded-[2rem] border border-[color:var(--line)] bg-[image:var(--card-bg-strong)] p-6 shadow-[0_24px_90px_rgba(60,34,24,0.08)]">
             <div className="flex flex-col gap-4 border-b border-[color:var(--line)] pb-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
@@ -860,10 +948,10 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                   </div>
 
                   <div className="mt-6 relative min-h-72">
-                    <pre className="pointer-events-none whitespace-pre-wrap text-[17px] leading-8 text-[color:#8f7c6f]">
+                    <pre className={`pointer-events-none whitespace-pre-wrap ${fontSizeClassName} text-[color:var(--typing-ghost)]`}>
                       {currentParagraph}
                     </pre>
-                    <pre className="pointer-events-none absolute inset-0 whitespace-pre-wrap text-[17px] leading-8">
+                    <pre className={`pointer-events-none absolute inset-0 whitespace-pre-wrap ${fontSizeClassName}`}>
                       {renderOverlay(currentParagraph, inputValue)}
                     </pre>
                   </div>
@@ -919,7 +1007,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                         <button
                           type="button"
                           onClick={() => void handleRetrySaveResult()}
-                          className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[rgba(255,255,255,0.9)] px-5 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+                          className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
                         >
                           {t('typing.actions.retrySave')}
                         </button>
@@ -927,7 +1015,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       {resultStatus === 'saved' ? (
                         <Link
                           href={resultsPath}
-                          className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[rgba(255,255,255,0.9)] px-5 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+                          className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
                         >
                           {t('results.navLabel')}
                         </Link>
@@ -987,19 +1075,23 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
             ) : null}
           </div>
 
-          <div className="rounded-[1.75rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] p-5">
+          <div className="rounded-[1.75rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5">
             <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
               {t('typing.rules.title')}
             </p>
             <ul className="mt-4 space-y-3 text-sm leading-7 text-[color:var(--muted)]">
-              <li>{t('typing.rules.item1')}</li>
+              <li>
+                {settingsSnapshot.punctuationAndCaseStrict
+                  ? t('typing.rules.item1Strict')
+                  : t('typing.rules.item1Relaxed')}
+              </li>
               <li>{t('typing.rules.item2')}</li>
               <li>{t('typing.rules.item3')}</li>
               <li>{t('typing.rules.item4')}</li>
             </ul>
           </div>
 
-          <div className="rounded-[1.75rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] p-5">
+          <div className="rounded-[1.75rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5">
             <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
               {t('typing.panel.summaryTitle')}
             </p>
@@ -1029,6 +1121,135 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
           </div>
         </aside>
       </main>
+
+      {isSettingsPanelOpen ? (
+        <div className="fixed inset-0 z-40 flex justify-end bg-[rgba(9,7,6,0.48)] backdrop-blur-sm">
+          <button
+            type="button"
+            aria-label={t('typing.settings.close')}
+            className="flex-1 cursor-default"
+            onClick={() => setSettingsPanelOpen(false)}
+          />
+          <aside className="w-full max-w-md border-l border-[color:var(--line)] bg-[color:var(--page-bg)] p-6 shadow-[-24px_0_70px_rgba(11,8,6,0.18)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
+                  {t('typing.settings.title')}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+                  {t('typing.settings.description')}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSettingsPanelOpen(false)}
+                className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-4 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              >
+                {t('typing.settings.close')}
+              </button>
+            </div>
+
+            <div className="mt-8 space-y-6">
+              <SettingsSection
+                title={t('typing.settings.sections.display')}
+                description={t('typing.settings.displayDescription')}
+              >
+                <SettingGroup label={t('typing.settings.fontSizeLabel')}>
+                  <OptionChip
+                    active={settingsSnapshot.fontSize === 'sm'}
+                    onClick={() => void handleSettingsChange({ fontSize: 'sm' })}
+                    label={t('typing.settings.fontSizeSm')}
+                  />
+                  <OptionChip
+                    active={settingsSnapshot.fontSize === 'md'}
+                    onClick={() => void handleSettingsChange({ fontSize: 'md' })}
+                    label={t('typing.settings.fontSizeMd')}
+                  />
+                  <OptionChip
+                    active={settingsSnapshot.fontSize === 'lg'}
+                    onClick={() => void handleSettingsChange({ fontSize: 'lg' })}
+                    label={t('typing.settings.fontSizeLg')}
+                  />
+                </SettingGroup>
+
+                <SettingGroup label={t('typing.settings.themeLabel')}>
+                  <OptionChip
+                    active={settingsSnapshot.theme === 'paper'}
+                    onClick={() => void handleSettingsChange({ theme: 'paper' })}
+                    label={t('typing.settings.themePaper')}
+                  />
+                  <OptionChip
+                    active={settingsSnapshot.theme === 'dark'}
+                    onClick={() => void handleSettingsChange({ theme: 'dark' })}
+                    label={t('typing.settings.themeDark')}
+                  />
+                </SettingGroup>
+              </SettingsSection>
+
+              <SettingsSection
+                title={t('typing.settings.sections.judgement')}
+                description={t('typing.settings.judgementDescription')}
+              >
+                <SettingRow
+                  title={t('typing.settings.punctuationCaseLabel')}
+                  body={
+                    settingsSnapshot.punctuationAndCaseStrict
+                      ? t('typing.settings.punctuationCaseOn')
+                      : t('typing.settings.punctuationCaseOff')
+                  }
+                  action={
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void handleSettingsChange({
+                          punctuationAndCaseStrict: !settingsSnapshot.punctuationAndCaseStrict,
+                        })
+                      }
+                      className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold transition ${
+                        settingsSnapshot.punctuationAndCaseStrict
+                          ? 'bg-[color:var(--accent)] text-white'
+                          : 'border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] text-[color:var(--foreground)]'
+                      }`}
+                    >
+                      {settingsSnapshot.punctuationAndCaseStrict
+                        ? t('typing.settings.toggleOn')
+                        : t('typing.settings.toggleOff')}
+                    </button>
+                  }
+                />
+              </SettingsSection>
+
+              <SettingsSection
+                title={t('typing.settings.sections.feedback')}
+                description={t('typing.settings.feedbackDescription')}
+              >
+                <SettingGroup label={t('typing.settings.typoDisplayLabel')}>
+                  <OptionChip
+                    active={settingsSnapshot.typoDisplayMode === 'inline-red'}
+                    onClick={() =>
+                      void handleSettingsChange({ typoDisplayMode: 'inline-red' })
+                    }
+                    label={t('typing.settings.typoDisplayInline')}
+                  />
+                  <OptionChip
+                    active={settingsSnapshot.typoDisplayMode === 'underline-red'}
+                    onClick={() =>
+                      void handleSettingsChange({ typoDisplayMode: 'underline-red' })
+                    }
+                    label={t('typing.settings.typoDisplayUnderline')}
+                  />
+                </SettingGroup>
+              </SettingsSection>
+            </div>
+
+            <div className="mt-8 rounded-[1.4rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-4 text-sm leading-7 text-[color:var(--muted)]">
+              {settingsStatus === 'saving'
+                ? t('typing.settings.saving')
+                : settingsMessage ?? t('typing.settings.idle')}
+            </div>
+          </aside>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1043,7 +1264,7 @@ function StatusPanel({
   const toneClassName =
     tone === 'danger'
       ? 'border-[rgba(161,68,49,0.22)] bg-[rgba(161,68,49,0.08)] text-[color:var(--foreground)]'
-      : 'border-[color:var(--line)] bg-[rgba(255,255,255,0.72)] text-[color:var(--muted)]';
+      : 'border-[color:var(--line)] bg-[color:var(--card-bg-soft)] text-[color:var(--muted)]';
 
   return (
     <div
@@ -1056,7 +1277,7 @@ function StatusPanel({
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <article className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.68)] p-5 shadow-[0_14px_40px_rgba(53,31,22,0.05)]">
+    <article className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--card-bg)] p-5 shadow-[0_14px_40px_rgba(53,31,22,0.05)]">
       <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
         {label}
       </p>
@@ -1069,7 +1290,7 @@ function MetricCard({ label, value }: { label: string; value: string }) {
 
 function ResultMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-[rgba(255,255,255,0.84)] px-4 py-4">
+    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-4 py-4">
       <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
         {label}
       </p>
@@ -1088,5 +1309,80 @@ function InfoRow({ label, value }: { label: string; value: string }) {
       </span>
       <span className="text-right text-[color:#efe3d7]">{value}</span>
     </div>
+  );
+}
+
+function SettingsSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-[1.6rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5">
+      <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
+        {title}
+      </p>
+      <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">{description}</p>
+      <div className="mt-5 space-y-5">{children}</div>
+    </section>
+  );
+}
+
+function SettingGroup({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div>
+      <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
+        {label}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">{children}</div>
+    </div>
+  );
+}
+
+function SettingRow({
+  title,
+  body,
+  action,
+}: {
+  title: string;
+  body: string;
+  action: ReactNode;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4 rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft-strong)] p-4">
+      <div>
+        <p className="text-sm font-semibold text-[color:var(--foreground)]">{title}</p>
+        <p className="mt-2 text-sm leading-7 text-[color:var(--muted)]">{body}</p>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function OptionChip({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition ${
+        active
+          ? 'border-[color:var(--accent)] bg-[rgba(161,68,49,0.08)] text-[color:var(--accent)]'
+          : 'border-[color:var(--line)] bg-[color:var(--card-bg-soft)] text-[color:var(--foreground)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]'
+      }`}
+    >
+      {label}
+    </button>
   );
 }

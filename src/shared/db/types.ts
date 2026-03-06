@@ -1,4 +1,7 @@
 export type WorkKind = 'public' | 'my';
+export type AppTheme = 'paper' | 'dark';
+export type FontSize = 'sm' | 'md' | 'lg';
+export type TypoDisplayMode = 'inline-red' | 'underline-red';
 
 export interface WorkRef {
   kind: WorkKind;
@@ -37,9 +40,9 @@ export interface TypingResultRecord {
   accuracy: number;
   settingsSnapshot: {
     punctuationAndCaseStrict: boolean;
-    theme: string;
-    fontSize: string;
-    typoDisplayMode: 'inline-red';
+    theme: AppTheme;
+    fontSize: FontSize;
+    typoDisplayMode: TypoDisplayMode;
   };
   paragraphReports?: ParagraphReport[];
 }
@@ -60,8 +63,8 @@ export interface TypingDraftRecord {
 export interface AppSettingsRecord {
   id: typeof import('./schema').DEFAULT_SETTINGS_RECORD_ID;
   punctuationAndCaseStrict: boolean;
-  theme: string;
-  fontSize: string;
-  typoDisplayMode: 'inline-red';
+  theme: AppTheme;
+  fontSize: FontSize;
+  typoDisplayMode: TypoDisplayMode;
   updatedAt: string;
 }
