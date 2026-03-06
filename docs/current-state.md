@@ -151,6 +151,7 @@
 - 설정 패널은 MVP에 포함한다(폰트/테마, 구두점·대문자 판정, 오타 표시 방식).
 - 성공 지표는 **DAU(일일 활성 사용자)**.
 - DAU는 GA4로 측정한다.
+- `NEXT_PUBLIC_GA4_MEASUREMENT_ID`가 있을 때만 GA4 스크립트를 로드하고, `typing_start`, `typing_paragraph_complete`, `typing_complete`, `my_work_upload` 이벤트를 전송한다.
 - 운영비는 **무조건 무료(0원 보장)** 여야 하며, 유저 증가가 곧바로 서버 비용 증가로 이어지는 설계를 피한다.
 - MVP(개발/배포)는 **정적 사이트**로 운영하며, AWS(Amplify/Cognito/AppSync/S3) 기반 백엔드는 사용하지 않는다.
 - 정적 호스팅(1순위)은 Firebase Hosting(Spark, Hosting만)으로 한다.

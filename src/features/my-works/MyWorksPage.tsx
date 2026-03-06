@@ -5,6 +5,7 @@ import { useEffect, useState, type ChangeEvent, type ReactNode } from 'react';
 import { useCurrentLocale, useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import { listMyWorks, removeMyWork, saveMyWork, type MyWorkRecord } from '@/shared/db';
+import { buildMyWorkUploadEventParams, trackGa4Event } from '@/shared/analytics/ga4';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
 import { createMyWorkRecord } from './record';
 
@@ -118,6 +119,13 @@ export default function MyWorksPage() {
       });
 
       await saveMyWork(record);
+      trackGa4Event(
+        'my_work_upload',
+        buildMyWorkUploadEventParams({
+          textLength: record.content.length,
+          uploadSource: form.sourceFileName ? 'file' : 'paste',
+        }),
+      );
 
       setWorks((current) => [record, ...current.filter((item) => item.id !== record.id)]);
       setForm(EMPTY_FORM);

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Gowun_Batang } from 'next/font/google';
+import Ga4Scripts from '@/shared/analytics/Ga4Scripts';
 import './globals.css';
 
 const bodyFont = Geist({
@@ -49,6 +50,7 @@ export default function RootLayout({
       <body
         className={`${bodyFont.variable} ${geistMono.variable} ${displayFont.variable} min-h-screen antialiased`}
       >
+        <Ga4Scripts />
         {children}
       </body>
     </html>

@@ -31,6 +31,13 @@ import {
   type TypingResultRecord,
   type WorkKind,
 } from '@/shared/db';
+import {
+  buildCommonAnalyticsParams,
+  buildParagraphCompleteEventParams,
+  buildTypingCompleteEventParams,
+  trackGa4Event,
+  type Ga4CommonContext,
+} from '@/shared/analytics/ga4';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
 import { useUiStore } from '@/shared/store';
 import { useWorksCatalog } from '@/features/library/useWorksCatalog';
@@ -99,6 +106,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const [settingsStatus, setSettingsStatus] = useState<SettingsStatus>('idle');
   const [settingsMessage, setSettingsMessage] = useState<string | null>(null);
   const [savedResult, setSavedResult] = useState<TypingResultRecord | null>(null);
+  const [typingSessionId, setTypingSessionId] = useState('');
+  const [hasSentTypingStart, setHasSentTypingStart] = useState(false);
   const [elapsedTimeMs, setElapsedTimeMs] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const elapsedBaseMsRef = useRef(0);
@@ -160,6 +169,26 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const finalWpm =
     savedResult?.wpm ?? (summaryReports.length > 0 ? calculateOverallWpm(summaryReports, elapsedTimeMs) : null);
   const totalTypos = summaryReports.length > 0 ? calculateTotalTypos(summaryReports) : null;
+  const analyticsContext = useMemo<Ga4CommonContext>(
+    () => ({
+      workKind,
+      typingSessionId: typingSessionId || undefined,
+      publicWorkId: workKind === 'public' ? selectedPublicWork?.id : undefined,
+      workLanguage: workKind === 'public' ? selectedPublicWork?.language : undefined,
+      punctuationCaseOn: settingsSnapshot.punctuationAndCaseStrict,
+    }),
+    [
+      selectedPublicWork?.id,
+      selectedPublicWork?.language,
+      settingsSnapshot.punctuationAndCaseStrict,
+      typingSessionId,
+      workKind,
+    ],
+  );
+  const analyticsParams = useMemo(
+    () => buildCommonAnalyticsParams(analyticsContext),
+    [analyticsContext],
+  );
   const themeStyles = useMemo(
     () =>
       ({
@@ -246,6 +275,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     setResultStatus('idle');
     setPersistStatus('idle');
     setLastDraftSavedAt(null);
+    setTypingSessionId(crypto.randomUUID());
+    setHasSentTypingStart(false);
     resetTiming(0);
     resetParagraphTracking(0, '');
     setSessionState('active');
@@ -262,6 +293,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       setResultStatus('idle');
       setPersistStatus('saved');
       setLastDraftSavedAt(draft.updatedAt);
+      setTypingSessionId(draft.typingSessionId ?? crypto.randomUUID());
+      setHasSentTypingStart(draft.hasSentTypingStart ?? false);
       resetTiming(draft.elapsedTimeMs);
       resetParagraphTracking(draft.paragraphIndex, draft.currentParagraphInput);
       setSessionState('active');
@@ -285,6 +318,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
           kind: workKind,
           id: selectedWork.id,
         },
+        typingSessionId,
+        hasSentTypingStart,
         partId: publicWork?.parts?.[0]?.id,
         workChecksum: publicWork?.checksum,
         paragraphIndex,
@@ -304,6 +339,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       selectedWork,
       settingsSnapshot,
       summaryReports,
+      typingSessionId,
+      hasSentTypingStart,
       workKind,
     ],
   );
@@ -346,6 +383,15 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
         paragraphs: nextReports,
       });
 
+      trackGa4Event(
+        'typing_complete',
+        buildTypingCompleteEventParams(analyticsContext, {
+          elapsedTimeMs: finalElapsedTimeMs,
+          wpm: nextResult.wpm,
+          accuracyPercent: nextResult.accuracy,
+        }),
+      );
+
       setSavedResult(nextResult);
       setResultStatus('saving');
 
@@ -360,7 +406,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
         setStorageNotice(t('typing.storage.resultSaveFailed'));
       }
     },
-    [draftId, selectedWork, settingsSnapshot, t, workKind],
+    [analyticsContext, draftId, selectedWork, settingsSnapshot, t, workKind],
   );
 
   async function handleRetrySaveResult() {
@@ -695,6 +741,11 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       currentParagraphStartedAtRef.current = new Date().toISOString();
     }
 
+    if (!hasSentTypingStart && nextValue.length > 0) {
+      trackGa4Event('typing_start', analyticsParams);
+      setHasSentTypingStart(true);
+    }
+
     startTiming();
     setInputValue(nextValue);
   }
@@ -716,6 +767,15 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     };
     const nextReports = [...reports, completedParagraph];
     const finalElapsedTimeMs = pauseTiming();
+
+    trackGa4Event(
+      'typing_paragraph_complete',
+      buildParagraphCompleteEventParams(analyticsContext, {
+        paragraphIndex: paragraphIndex + 1,
+        mistakeCount: currentTypoCount,
+        elapsedTimeMs: finalElapsedTimeMs,
+      }),
+    );
 
     setReports(nextReports);
     setPersistStatus('idle');

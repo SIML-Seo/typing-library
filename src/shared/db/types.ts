@@ -61,6 +61,8 @@ export interface TypingResultRecord {
 export interface TypingDraftRecord {
   id: string;
   workRef: WorkRef;
+  typingSessionId?: string;
+  hasSentTypingStart?: boolean;
   partId?: string;
   workChecksum?: string;
   paragraphIndex: number;
