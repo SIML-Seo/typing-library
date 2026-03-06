@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "works:index:generate": "node scripts/works-index.mjs generate",
+    "works:index:validate": "node scripts/works-index.mjs validate"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",

@@ -1,0 +1,3 @@
+This is a sample part file for the works repository guide.
+
+Replace this file with a real public-domain text before production use.

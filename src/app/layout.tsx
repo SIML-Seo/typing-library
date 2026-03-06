@@ -1,25 +1,43 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-// import { I18nProviderClient } from '@/locales/client'; // 이 import는 제거합니다.
+import { Geist, Geist_Mono, Gowun_Batang } from "next/font/google";
 import "./globals.css";
-import AuthProvider from "@/components/AuthProvider";
-import AuthButtons from "@/components/AuthButtons";
-import I18nClientProvider from "@/components/I18nClientProvider"; // 새로 만든 프로바이더를 가져옵니다.
-import AmplifyCredentialsManager from "@/components/AmplifyCredentialsManager";
+import I18nClientProvider from "@/components/I18nClientProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const bodyFont = Geist({
+  variable: "--font-body",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
+  subsets: ["latin"],
+});
+
+const displayFont = Gowun_Batang({
+  variable: "--font-display",
+  weight: "400",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Typing Library",
-  description: "Typing Library",
+  title: "Typing Library | 저작권 만료 문학을 그대로 타이핑하는 필사",
+  description:
+    "저작권이 만료된 문학 작품을 고스트 텍스트 위에서 그대로 타이핑하는 필사형 웹앱. 비로그인, 로컬 저장, 무료 운영을 전제로 설계합니다.",
+  keywords: [
+    "필사",
+    "타이핑",
+    "타자 연습",
+    "문학 필사",
+    "저작권 만료 문학",
+    "typing library",
+  ],
+  openGraph: {
+    title: "Typing Library",
+    description:
+      "저작권이 만료된 문학 작품을 그대로 타이핑하는 필사형 웹앱",
+    type: "website",
+    locale: "ko_KR",
+  },
 };
 
 export default function RootLayout({
@@ -27,29 +45,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // 서버에서 현재 로케일 결정 (여기서는 'ko' 하드코딩)
-  const currentLocale = 'ko';
+  const currentLocale = "ko";
 
   return (
     <html lang={currentLocale}>
-      <I18nClientProvider locale={currentLocale}>
-        <AuthProvider>
-          <AmplifyCredentialsManager />
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen flex-col`}
-          >
-            <header className="bg-gray-100 p-4 shadow-md">
-              <nav className="container mx-auto flex items-center justify-between">
-                <h1 className="text-xl font-bold">Typing Library</h1>
-                <AuthButtons />
-              </nav>
-            </header>
-            <main className="flex-grow p-4">
-              {children}
-            </main>
-          </body>
-        </AuthProvider>
-      </I18nClientProvider>
+      <body
+        className={`${bodyFont.variable} ${geistMono.variable} ${displayFont.variable} min-h-screen antialiased`}
+      >
+        <I18nClientProvider locale={currentLocale}>{children}</I18nClientProvider>
+      </body>
     </html>
   );
 }

@@ -1,0 +1,33 @@
+[
+  {
+    "id": "little-prince-saint-exupery",
+    "title": "The Little Prince",
+    "author": "Antoine de Saint-Exupéry",
+    "language": "en",
+    "source": "예시용 메타데이터",
+    "copyrightProof": "예시: 권리 상태를 검토한 뒤 등록",
+    "parts": [
+      {
+        "id": "part-001",
+        "title": "Chapter 1",
+        "path": "/works/little-prince/part-001.v1.txt"
+      },
+      {
+        "id": "part-002",
+        "title": "Chapter 2",
+        "path": "/works/little-prince/part-002.v1.txt"
+      }
+    ],
+    "checksum": "84148620a373982743d158abdd29d3940cd9f84a4cb416ba6116e185fe333b20"
+  },
+  {
+    "id": "spring-spring-kim-yujeong",
+    "title": "봄봄",
+    "author": "김유정",
+    "language": "ko",
+    "source": "예시용 메타데이터",
+    "copyrightProof": "예시: 저작권 만료 작품만 등록",
+    "textPath": "/works/spring-spring-kim-yujeong.txt",
+    "checksum": "0dba137da80a7ef12cae60e2907120fb22c4f1e37bf4ad3622a6db0b7c029799"
+  }
+]

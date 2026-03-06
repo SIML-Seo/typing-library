@@ -1,0 +1,3 @@
+This is another sample part file.
+
+Use versioned filenames when a text file is corrected or replaced.
