@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "node --import tsx --test $(find src -type f \\( -name '*.test.ts' -o -name '*.test.tsx' \\))",
+    "test:watch": "node --import tsx --test --watch $(find src -type f \\( -name '*.test.ts' -o -name '*.test.tsx' \\))",
     "works:index:generate": "node scripts/works-index.mjs generate",
     "works:index:validate": "node scripts/works-index.mjs validate"
   },

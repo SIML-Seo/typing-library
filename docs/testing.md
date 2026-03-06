@@ -10,9 +10,12 @@
 
 ## 1) 테스트 스택 / 피라미드
 
-- Unit/Integration: `Vitest` + `React Testing Library`
+- 현재 Unit 실행 기반: `node:test` + `tsx`
+- 목표 Unit/Integration 스택: `Vitest` + `React Testing Library`
 - E2E: `Playwright`
 - 목적: 타이핑 엔진의 판정 로직은 Unit으로 고정하고, 핵심 사용자 흐름은 E2E로 검증한다
+
+현재 레포는 테스트 러너와 브라우저 테스트 의존성이 아직 설치되지 않은 상태라, 우선 순수 로직을 `node:test`로 고정하고 이후 컴포넌트 테스트 구간에서 `Vitest + RTL`을 추가한다.
 
 1) Unit (가장 중요)
 - 텍스트 분절(문단/Chunk)
