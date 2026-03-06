@@ -13,6 +13,8 @@
 - `auth.md`: 인증/보안 설계 (MVP: 정적/무인증, 레거시: NextAuth/Cognito 메모)
 - `architecture.md`: 아키텍처/모듈 경계 (MVP: 정적/로컬, 레거시: AWS 프로토타입)
 - `state-management.md`: 새 MVP 상태관리 원칙 (`IndexedDB` 우선, `zustand`는 UI 상태 한정)
+- `engineering-guidelines.md`: 방어코딩 경계, fallback 규칙, 내부 로직 단순화 원칙
+- `code-review-checklist.md`: PR 리뷰용 과한 방어코딩 / silent failure 체크리스트
 - `works-repo-guide.md`: 공개 작품 저장소 구조/메타데이터/배포 운영 가이드
 - `mvp-implementation-plan.md`: 현재 레포 안에서 MVP 구현을 분리하는 실제 전환 계획
 - `examples/works-repo/`: works 저장소 초기 구조 샘플

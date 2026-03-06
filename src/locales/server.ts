@@ -3,4 +3,13 @@ import { createI18nServer } from 'next-international/server';
 export const { getI18n, getScopedI18n, getStaticParams, getCurrentLocale } =
   createI18nServer({
     ko: () => import('./ko'),
+    en: () => import('./en'),
+    ja: () => import('./ja'),
+    'zh-CN': () => import('./zh-CN'),
+    'zh-TW': () => import('./zh-TW'),
+    es: () => import('./es'),
+    fr: () => import('./fr'),
+    de: () => import('./de'),
+    'pt-BR': () => import('./pt-BR'),
+    id: () => import('./id'),
   });

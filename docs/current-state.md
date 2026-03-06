@@ -27,16 +27,16 @@
 - Auth: NextAuth v4 + Cognito Provider
 - Backend: Amplify Gen2(Auth/Data/Storage)
 - State: Zustand(현재는 legacy store), 새 MVP는 `IndexedDB + local state + 얇은 UI store` 원칙으로 전환 중
-- i18n: next-international(현재 `ko`만, locale 하드코딩)
+- i18n: next-international(기본 `ko` + 주요 10개 언어 라우팅/사전 추가)
 
 ## 3) 레포 구조(주요)
 
 - `amplify/`: Gen2 backend 정의(auth/data/storage)
-- `src/app`: 현재 활성 MVP 진입점(랜딩 중심)
+- `src/app`: 현재 활성 MVP 진입점(랜딩 + `library`)
 - `src/features`: 새 MVP 기능 모듈
 - `src/legacy`: 기존 AWS/Auth/Admin/Store 코드 격리 영역
 - `src/components`: 현재는 `I18nClientProvider` 등 잔여 공통 컴포넌트
-- `src/shared`: 새 MVP 공통 계층(`db`, `store` 등) 추가 중
+- `src/shared`: 새 MVP 공통 계층(`db`, `store`, `lib`) 추가됨
 
 ## 4) 백엔드(Amplify Gen2) 현황
 
@@ -72,12 +72,17 @@
 ### 5.1 Public(`/`)
 
 - `src/app/page.tsx`는 새 MVP 랜딩으로 교체됨
-- 현재 공개 진입점은 “작품 필사 서비스 소개” 중심이며, 핵심 앱 화면(`library`, `typing`, `results`)은 아직 미구현
+- `src/app/library/page.tsx`가 추가되어 공개 작품 카탈로그/로컬 작품 진입점이 구현됨
+- `src/app/typing/[workId]/page.tsx`와 `src/app/[locale]/typing/[workId]/page.tsx`가 추가되어 문단 단위 타이핑 콘솔이 연결됨
+- `library`는 `NEXT_PUBLIC_WORKS_BASE_URL`이 있으면 works origin의 `index.json`을 읽고, 없으면 샘플 카탈로그로 프리뷰됨
+- `typing`은 오버레이 입력, 즉시 오타 표시, 문단 이동, 로컬 자동 저장/이어하기, 완료 결과 로컬 저장까지 연결됨
+- `results`는 아직 미구현
 
 ### 5.2 Layout
 
 - `src/app/layout.tsx`
-  - 정적 MVP 기준 메타데이터 + locale `ko` 기준 i18n provider 래핑
+  - 정적 MVP 기준 메타데이터와 폰트만 유지
+  - i18n provider는 기본 경로(`/`, `/library`)와 `/:locale/*` 레이아웃에서 각각 주입
   - AWS/Auth wrapper는 제거됨
 
 ### 5.3 Admin(`/admin`)
@@ -112,11 +117,21 @@
 
 ### 5.5 i18n
 
-- `src/locales/*`: `ko`만 존재, 동적 로케일 전환은 아직 없음
+- `src/locales/*`: `ko`, `en`, `ja`, `zh-CN`, `zh-TW`, `es`, `fr`, `de`, `pt-BR`, `id` 사전 추가
+- 기본 경로(`/`, `/library`)는 `ko`, 그 외 언어는 `/:locale`, `/:locale/library` 경로로 접근 가능
+- 랜딩/라이브러리 상단에 언어 전환 UI가 추가됨
+
+### 5.6 Local-first 계층
+
+- `src/shared/db/*`
+  - IndexedDB 오픈/트랜잭션 유틸과 `myWorks`, `typingResults`, `typingDrafts`, `appSettings` 리포지토리 초안이 추가됨
+- `src/shared/store/*`
+  - `zustand` 기반 UI store(`isSettingsPanelOpen`, `isResumeDialogOpen`)가 추가됨
+- 현재 원칙은 “영속 데이터는 IndexedDB, UI 전역 상태만 store”로 고정됨
 
 ## 6) 리스크/갭
 
-- 핵심 기능(작품 선택/필사/결과 저장) 미구현
+- 필사 엔진(`typing`)과 결과 화면(`results`)은 아직 미구현
 - outputs 파일 미포함으로 신규 개발자 온보딩/실행이 막힘
 - AppSync Cognito 인증 헤더 형식(`Authorization: Bearer <jwt>`)은 실제 동작 검증 필요
 - NextAuth ↔ Amplify(Storage) 인증 브릿지 미완 → S3 업로드 권한/자격증명 이슈 가능
