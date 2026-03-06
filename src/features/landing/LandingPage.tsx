@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
 import { useCurrentLocale, useI18n } from '@/locales/client';

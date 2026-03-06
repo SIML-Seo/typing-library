@@ -1,4 +1,5 @@
 import { defineMessages } from './messages';
+import { resultsMessagesEn } from './shared-results';
 import { typingMessagesEn } from './shared-typing';
 
 export default defineMessages({
@@ -175,5 +176,6 @@ export default defineMessages({
         'Les œuvres personnelles, résultats et brouillons utilisent IndexedDB comme source de vérité. Le store mémoire reste limité à l’état temporaire de l’interface.',
     },
   },
+  results: resultsMessagesEn,
   typing: typingMessagesEn,
 } as const);

@@ -104,6 +104,7 @@ export default function TypingPage({ workId }: TypingPageProps) {
     inputValue.length === currentParagraph.length;
   const isLastParagraph = paragraphs.length > 0 && paragraphIndex === paragraphs.length - 1;
   const libraryPath = getLocalizedPath(locale, '/library');
+  const resultsPath = getLocalizedPath(locale, '/results');
   const finalAccuracy =
     savedResult?.accuracy ??
     (summaryReports.length > 0 ? calculateOverallAccuracy(summaryReports) : null);
@@ -375,6 +376,7 @@ export default function TypingPage({ workId }: TypingPageProps) {
     }
 
     let isMounted = true;
+    const currentWork = selectedWork;
 
     async function prepareSession() {
       try {
@@ -399,9 +401,9 @@ export default function TypingPage({ workId }: TypingPageProps) {
 
         if (
           storedDraft &&
-          selectedWork.checksum &&
+          currentWork.checksum &&
           storedDraft.workChecksum &&
-          storedDraft.workChecksum !== selectedWork.checksum
+          storedDraft.workChecksum !== currentWork.checksum
         ) {
           setStorageNotice(t('typing.resume.outdated'));
           setResumeDraft(null);
@@ -636,6 +638,12 @@ export default function TypingPage({ workId }: TypingPageProps) {
           <div className="flex items-center gap-3">
             <LocaleSwitcher />
             <Link
+              href={resultsPath}
+              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+            >
+              {t('results.navLabel')}
+            </Link>
+            <Link
               href={libraryPath}
               className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
             >
@@ -839,6 +847,14 @@ export default function TypingPage({ workId }: TypingPageProps) {
                         >
                           {t('typing.actions.retrySave')}
                         </button>
+                      ) : null}
+                      {resultStatus === 'saved' ? (
+                        <Link
+                          href={resultsPath}
+                          className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[rgba(255,255,255,0.9)] px-5 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+                        >
+                          {t('results.navLabel')}
+                        </Link>
                       ) : null}
                     </div>
                   </div>

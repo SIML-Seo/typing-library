@@ -24,6 +24,7 @@ export type {
   AppSettingsRecord,
   MyWorkRecord,
   ParagraphReport,
+  TypingDraftParagraphReport,
   TypingDraftRecord,
   TypingResultRecord,
   WorkKind,

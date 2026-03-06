@@ -13,6 +13,11 @@ export interface ParagraphReport {
   endedAt: string;
 }
 
+export interface TypingDraftParagraphReport extends ParagraphReport {
+  typedLength: number;
+  correctCharacterCount: number;
+}
+
 export interface MyWorkRecord {
   id: string;
   title: string;
@@ -46,7 +51,7 @@ export interface TypingDraftRecord {
   workChecksum?: string;
   paragraphIndex: number;
   currentParagraphInput: string;
-  paragraphReportsSnapshot?: ParagraphReport[];
+  paragraphReportsSnapshot?: TypingDraftParagraphReport[];
   elapsedTimeMs: number;
   settingsSnapshot: TypingResultRecord['settingsSnapshot'];
   updatedAt: string;

@@ -1,4 +1,5 @@
 import { defineMessages } from './messages';
+import { resultsMessagesEn } from './shared-results';
 import { typingMessagesEn } from './shared-typing';
 
 export default defineMessages({
@@ -174,5 +175,6 @@ export default defineMessages({
         'マイ作品、結果、ドラフトはすべて IndexedDB を基準にします。メモリ store は設定パネルのような一時的 UI 状態だけに使います。',
     },
   },
+  results: resultsMessagesEn,
   typing: typingMessagesEn,
 } as const);

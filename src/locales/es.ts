@@ -1,4 +1,5 @@
 import { defineMessages } from './messages';
+import { resultsMessagesEn } from './shared-results';
 import { typingMessagesEn } from './shared-typing';
 
 export default defineMessages({
@@ -174,5 +175,6 @@ export default defineMessages({
         'Las obras personales, resultados y borradores usan IndexedDB como fuente de verdad. El store en memoria queda reservado al estado temporal de la UI.',
     },
   },
+  results: resultsMessagesEn,
   typing: typingMessagesEn,
 } as const);

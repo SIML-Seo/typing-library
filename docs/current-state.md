@@ -76,7 +76,7 @@
 - `src/app/typing/[workId]/page.tsx`와 `src/app/[locale]/typing/[workId]/page.tsx`가 추가되어 문단 단위 타이핑 콘솔이 연결됨
 - `library`는 `NEXT_PUBLIC_WORKS_BASE_URL`이 있으면 works origin의 `index.json`을 읽고, 없으면 샘플 카탈로그로 프리뷰됨
 - `typing`은 오버레이 입력, 즉시 오타 표시, 문단 이동, 로컬 자동 저장/이어하기, 완료 결과 로컬 저장까지 연결됨
-- `results`는 아직 미구현
+- `results`는 로컬에 저장된 완료 세션을 조회하는 히스토리 화면까지 구현됨(검색 + 공개/내 작품 필터)
 
 ### 5.2 Layout
 

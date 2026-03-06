@@ -75,6 +75,7 @@ export default function LibraryPage() {
   const selectedWork =
     filteredItems.find((item) => item.id === selectedWorkId) ?? filteredItems[0] ?? null;
   const typingPath = selectedWork ? getLocalizedPath(locale, `/typing/${selectedWork.id}`) : null;
+  const resultsPath = getLocalizedPath(locale, '/results');
 
   return (
     <div className="min-h-screen">
@@ -92,6 +93,12 @@ export default function LibraryPage() {
           <div className="flex items-center gap-3">
             <SourceBadge sourceMode={sourceMode} />
             <LocaleSwitcher />
+            <Link
+              href={resultsPath}
+              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+            >
+              {t('results.navLabel')}
+            </Link>
             <Link
               href={getLocalizedPath(locale, '/')}
               className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-5 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
