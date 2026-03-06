@@ -71,6 +71,15 @@ describe('buildTypingResult', () => {
         theme: 'paper',
         fontSize: 'md',
         typoDisplayMode: 'inline-red',
+        visualFilters: {
+          brightness: 100,
+          contrast: 100,
+          hue: 0,
+          saturate: 100,
+          sepia: 0,
+          grayscale: 0,
+          invert: 0,
+        },
       },
       paragraphs: paragraphReports,
     });

@@ -3,6 +3,16 @@ export type AppTheme = 'paper' | 'dark';
 export type FontSize = 'sm' | 'md' | 'lg';
 export type TypoDisplayMode = 'inline-red' | 'underline-red';
 
+export interface VisualFilterSettings {
+  brightness: number;
+  contrast: number;
+  hue: number;
+  saturate: number;
+  sepia: number;
+  grayscale: number;
+  invert: number;
+}
+
 export interface WorkRef {
   kind: WorkKind;
   id: string;
@@ -43,6 +53,7 @@ export interface TypingResultRecord {
     theme: AppTheme;
     fontSize: FontSize;
     typoDisplayMode: TypoDisplayMode;
+    visualFilters: VisualFilterSettings;
   };
   paragraphReports?: ParagraphReport[];
 }
@@ -66,5 +77,6 @@ export interface AppSettingsRecord {
   theme: AppTheme;
   fontSize: FontSize;
   typoDisplayMode: TypoDisplayMode;
+  visualFilters: VisualFilterSettings;
   updatedAt: string;
 }

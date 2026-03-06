@@ -75,7 +75,7 @@
 - `src/app/library/page.tsx`가 추가되어 공개 작품 카탈로그/로컬 작품 진입점이 구현됨
 - `src/app/typing/[workId]/page.tsx`, `src/app/[locale]/typing/[workId]/page.tsx`, `src/app/typing/my/[workId]/page.tsx`가 추가되어 공개 작품/내 작품 공용 타이핑 콘솔이 연결됨
 - `library`는 `NEXT_PUBLIC_WORKS_BASE_URL`이 있으면 works origin의 `index.json`을 읽고, 없으면 샘플 카탈로그로 프리뷰됨
-- `typing`은 오버레이 입력, 즉시 오타 표시, 문단 이동, 로컬 자동 저장/이어하기, 완료 결과 로컬 저장, 설정 패널(폰트/테마/판정/오타 표시 방식)까지 연결됨
+- `typing`은 오버레이 입력, 즉시 오타 표시, 문단 이동, 로컬 자동 저장/이어하기, 완료 결과 로컬 저장, 설정 패널(폰트/테마/판정/오타 표시 방식 + 화면 필터 컨트롤)까지 연결됨
 - `results`는 로컬에 저장된 완료 세션을 조회하는 히스토리 화면까지 구현됨(검색 + 공개/내 작품 필터)
 - `my-works`는 `.txt` 업로드/텍스트 붙여넣기 기반 로컬 원고 저장, 삭제, 필사 시작까지 구현됨
 

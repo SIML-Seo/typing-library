@@ -16,6 +16,7 @@ import { useCurrentLocale, useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import {
   DEFAULT_APP_SETTINGS,
+  DEFAULT_VISUAL_FILTERS,
   DEFAULT_SETTINGS_RECORD_ID,
   getAppSettings,
   getMyWork,
@@ -50,6 +51,7 @@ import {
   isCharacterMatch,
   splitParagraphs,
 } from './text';
+import { buildVisualFilterValue, hasActiveVisualFilter } from './visual-filters';
 
 const AUTOSAVE_DEBOUNCE_MS = 600;
 
@@ -174,6 +176,14 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
         '--typing-error': '#de6e64',
       }) as CSSProperties,
     [isDarkTheme],
+  );
+  const visualFilterValue = useMemo(
+    () => buildVisualFilterValue(settingsSnapshot.visualFilters),
+    [settingsSnapshot.visualFilters],
+  );
+  const hasVisualFilter = useMemo(
+    () => hasActiveVisualFilter(settingsSnapshot.visualFilters),
+    [settingsSnapshot.visualFilters],
   );
 
   const getElapsedNow = useCallback(() => {
@@ -383,11 +393,15 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   }
 
   async function handleSettingsChange(
-    patch: Partial<Omit<AppSettingsRecord, 'id' | 'updatedAt'>>,
+    patch: Parameters<typeof saveAppSettings>[0],
   ) {
     const optimisticRecord: AppSettingsRecord = {
       ...settingsSnapshot,
       ...patch,
+      visualFilters: {
+        ...settingsSnapshot.visualFilters,
+        ...patch.visualFilters,
+      },
       updatedAt: new Date().toISOString(),
     };
 
@@ -815,6 +829,17 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
         </div>
       </header>
 
+      {hasVisualFilter ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-20"
+          style={{
+            backdropFilter: visualFilterValue,
+            WebkitBackdropFilter: visualFilterValue,
+          }}
+        />
+      ) : null}
+
       <main className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[minmax(0,1.25fr)_360px] lg:px-10 lg:py-14">
         <section className="space-y-6">
           <div className="grid gap-4 md:grid-cols-5">
@@ -1240,6 +1265,131 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                   />
                 </SettingGroup>
               </SettingsSection>
+
+              <SettingsSection
+                title={t('typing.settings.sections.filters')}
+                description={t('typing.settings.filtersDescription')}
+              >
+                <div className="space-y-4">
+                  <FilterSlider
+                    label={t('typing.settings.filtersBrightness')}
+                    min={70}
+                    max={130}
+                    step={1}
+                    value={settingsSnapshot.visualFilters.brightness}
+                    suffix="%"
+                    onChange={(value) =>
+                      void handleSettingsChange({
+                        visualFilters: {
+                          brightness: value,
+                        },
+                      })
+                    }
+                  />
+                  <FilterSlider
+                    label={t('typing.settings.filtersContrast')}
+                    min={70}
+                    max={130}
+                    step={1}
+                    value={settingsSnapshot.visualFilters.contrast}
+                    suffix="%"
+                    onChange={(value) =>
+                      void handleSettingsChange({
+                        visualFilters: {
+                          contrast: value,
+                        },
+                      })
+                    }
+                  />
+                  <FilterSlider
+                    label={t('typing.settings.filtersHue')}
+                    min={-45}
+                    max={45}
+                    step={1}
+                    value={settingsSnapshot.visualFilters.hue}
+                    suffix="deg"
+                    onChange={(value) =>
+                      void handleSettingsChange({
+                        visualFilters: {
+                          hue: value,
+                        },
+                      })
+                    }
+                  />
+                  <FilterSlider
+                    label={t('typing.settings.filtersSaturate')}
+                    min={70}
+                    max={150}
+                    step={1}
+                    value={settingsSnapshot.visualFilters.saturate}
+                    suffix="%"
+                    onChange={(value) =>
+                      void handleSettingsChange({
+                        visualFilters: {
+                          saturate: value,
+                        },
+                      })
+                    }
+                  />
+                  <FilterSlider
+                    label={t('typing.settings.filtersSepia')}
+                    min={0}
+                    max={60}
+                    step={1}
+                    value={settingsSnapshot.visualFilters.sepia}
+                    suffix="%"
+                    onChange={(value) =>
+                      void handleSettingsChange({
+                        visualFilters: {
+                          sepia: value,
+                        },
+                      })
+                    }
+                  />
+                  <FilterSlider
+                    label={t('typing.settings.filtersGrayscale')}
+                    min={0}
+                    max={60}
+                    step={1}
+                    value={settingsSnapshot.visualFilters.grayscale}
+                    suffix="%"
+                    onChange={(value) =>
+                      void handleSettingsChange({
+                        visualFilters: {
+                          grayscale: value,
+                        },
+                      })
+                    }
+                  />
+                  <FilterSlider
+                    label={t('typing.settings.filtersInvert')}
+                    min={0}
+                    max={20}
+                    step={1}
+                    value={settingsSnapshot.visualFilters.invert}
+                    suffix="%"
+                    onChange={(value) =>
+                      void handleSettingsChange({
+                        visualFilters: {
+                          invert: value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    void handleSettingsChange({
+                      visualFilters: DEFAULT_VISUAL_FILTERS,
+                    })
+                  }
+                  className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+                >
+                  {t('typing.settings.filtersReset')}
+                </button>
+              </SettingsSection>
             </div>
 
             <div className="mt-8 rounded-[1.4rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-4 text-sm leading-7 text-[color:var(--muted)]">
@@ -1384,5 +1534,44 @@ function OptionChip({
     >
       {label}
     </button>
+  );
+}
+
+function FilterSlider({
+  label,
+  min,
+  max,
+  step,
+  value,
+  suffix,
+  onChange,
+}: {
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  suffix: string;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="block rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft-strong)] p-4">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-sm font-semibold text-[color:var(--foreground)]">{label}</span>
+        <span className="text-sm text-[color:var(--muted)]">
+          {value}
+          {suffix}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-4 block w-full accent-[color:var(--accent)]"
+      />
+    </label>
   );
 }

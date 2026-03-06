@@ -4,7 +4,12 @@ export {
   DEFAULT_SETTINGS_RECORD_ID,
   STORE_NAMES,
 } from './schema';
-export { DEFAULT_APP_SETTINGS, getAppSettings, saveAppSettings } from './app-settings-repository';
+export {
+  DEFAULT_APP_SETTINGS,
+  DEFAULT_VISUAL_FILTERS,
+  getAppSettings,
+  saveAppSettings,
+} from './app-settings-repository';
 export { getMyWork, listMyWorks, removeMyWork, saveMyWork } from './my-works-repository';
 export { openAppDb } from './open-db';
 export {
@@ -30,6 +35,7 @@ export type {
   TypingDraftRecord,
   TypingResultRecord,
   TypoDisplayMode,
+  VisualFilterSettings,
   WorkKind,
   WorkRef,
 } from './types';
