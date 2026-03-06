@@ -87,6 +87,8 @@ firebase deploy --only hosting:works
 
 - [ ] 최신 배포가 반영되었는지 확인(브라우저 캐시/Service Worker 영향 점검)
 - [ ] 작품 인덱스/원문이 404 없이 로드되는지 확인
+- [ ] 작품 인덱스가 앱 origin이 아닌 `worksBaseUrl`에서 응답하는지 확인
+- [ ] works만 재배포했을 때 앱 재배포 없이 목록/원문이 갱신되는지 확인
 
 ### 4.2 로컬 데이터(IndexedDB)
 
@@ -113,3 +115,21 @@ firebase deploy --only hosting:works
 - [ ] GA4 태그가 프로덕션에서만 로드되도록 설정(또는 Measurement ID가 있을 때만)
 - [ ] 이벤트에 필사 텍스트(콘텐츠)나 토큰/시크릿이 포함되지 않는지 확인
 - [ ] DAU는 GA4의 “Active users(일별)”로 확인
+- [ ] `typing_start`가 첫 입력에서만 1회 전송되는지 확인
+- [ ] `typing_paragraph_complete`, `typing_complete`, `my_work_upload` 이벤트가 각각 성공 시점에 맞게 전송되는지 확인
+- [ ] 이어하기 복원 시 `typing_start`가 재전송되지 않는지 확인
+
+### 6.1 프로덕션 점검 순서
+
+1. 프로덕션 배포 후 브라우저 DevTools에서 `gtag/js` 로드 여부를 확인한다
+2. 공개 작품 1건을 열고 첫 입력을 넣어 `typing_start`를 확인한다
+3. 문단 완료와 작품 완료까지 진행해 `typing_paragraph_complete`, `typing_complete`를 확인한다
+4. 같은 브라우저에서 새로고침 후 이어하기를 수행하고 `typing_start` 중복이 없는지 본다
+5. 내 작품 1건을 저장해 `my_work_upload`와 파라미터(`upload_source`, `text_length`)를 확인한다
+
+### 6.2 실패 시 우선 점검 항목
+
+- `NEXT_PUBLIC_GA4_MEASUREMENT_ID` 누락 여부
+- GA 스크립트가 CSP/광고차단 확장 프로그램에 막히는지 여부
+- 이벤트 파라미터에 `typing_session_id`, `work_kind`, `punctuation_case_on`이 기대대로 붙는지 여부
+- 로컬 드래프트 복원 시 `hasSentTypingStart` 상태가 유지되는지 여부

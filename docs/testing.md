@@ -77,6 +77,8 @@ MVP는 정적 사이트로 운영하며 앱 내 “관리자 업로드”를 제
 
 - [ ] 작품 인덱스(`{worksBaseUrl}/works/index.json` 등)가 로드된다
 - [ ] 작품 원문(`{worksBaseUrl}/works/{id}.txt` 등)이 로드된다
+- [ ] 앱 origin이 아닌 `worksBaseUrl` origin에서 응답되는지 네트워크 탭에서 확인한다
+- [ ] 인덱스 응답이 최신 배포 기준으로 갱신됐는지 확인한다(캐시 무효화 포함)
 
 ### E2E-07 설정 패널(MVP): 폰트/테마/판정/오타 표시
 
@@ -93,6 +95,37 @@ MVP는 정적 사이트로 운영하며 앱 내 “관리자 업로드”를 제
 - [ ] 페이지 오타 리포트 확인
 - [ ] 로컬 기록 유지(새로고침)
 - [ ] GA4 태그 로드 및 핵심 이벤트(typing_start/typing_complete) 수신(콘텐츠 미전송, DAU=typing_start)
+
+### 3.1 GA4 실측 체크리스트
+
+- [ ] 프로덕션 환경에 `NEXT_PUBLIC_GA4_MEASUREMENT_ID`가 설정되어 있다
+- [ ] 페이지 소스/네트워크 탭에서 `gtag/js`가 로드된다
+- [ ] 첫 입력 시 `typing_start`가 1회만 전송된다
+- [ ] 문단 완료 시 `typing_paragraph_complete`가 전송된다
+- [ ] 작품 완료 시 `typing_complete`가 전송된다
+- [ ] 내 작품 저장 성공 시 `my_work_upload`가 전송된다
+- [ ] 이벤트 파라미터에 원문 텍스트, 사용자 입력, 파일명, 이메일이 포함되지 않는다
+- [ ] 이어하기 복원 세션에서는 `typing_start`가 재전송되지 않는다
+
+권장 확인 순서
+1. 브라우저 DevTools Network 탭에서 `collect`/`g/collect` 요청을 연다
+2. GA4 DebugView 또는 실시간 이벤트 화면에서 `typing_start → typing_paragraph_complete → typing_complete` 순서를 확인한다
+3. 같은 세션에서 새로고침 후 이어하기를 수행하고 `typing_start` 중복이 없는지 다시 확인한다
+
+### 3.2 works origin 스모크 체크리스트
+
+- [ ] `NEXT_PUBLIC_WORKS_BASE_URL`이 배포 환경에 설정되어 있다
+- [ ] `{worksBaseUrl}/works/index.json`이 200으로 응답한다
+- [ ] 대표 작품 1건 이상에 대해 원문 파일이 200으로 응답한다
+- [ ] 라이브러리 목록이 샘플 카탈로그가 아니라 실제 works 카탈로그를 보여준다
+- [ ] 작품 선택 후 타이핑 화면에서 원문이 실제 works origin 텍스트로 렌더링된다
+- [ ] works origin을 갱신한 뒤 앱 재배포 없이 인덱스 변경이 반영된다
+
+권장 확인 순서
+1. 배포 직후 `curl {worksBaseUrl}/works/index.json` 또는 브라우저 직접 접속으로 인덱스 응답 확인
+2. 앱에서 라이브러리 진입 후 샘플 문구 대신 실제 작품 메타데이터가 나오는지 확인
+3. 대표 작품 1개를 열어 네트워크 탭에서 원문이 `worksBaseUrl`에서 로드되는지 확인
+4. 인덱스/원문을 수정한 뒤 works만 재배포하고 앱 재배포 없이 반영되는지 확인
 
 ## 4) 알려진 제약
 

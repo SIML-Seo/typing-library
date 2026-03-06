@@ -21,6 +21,7 @@
 메모
 - 로컬 개발에서 GA를 끄고 싶다면, `NEXT_PUBLIC_GA4_MEASUREMENT_ID`를 비워두는 방식으로 제어하는 패턴을 권장한다.
 - 이벤트에는 필사 텍스트(콘텐츠)나 PII를 포함하지 않는다(ADR 0005).
+- 실측 확인 시에는 DebugView/실시간 이벤트 화면에서 `typing_start`, `typing_paragraph_complete`, `typing_complete`, `my_work_upload` 순서를 본다.
 
 ### 1.2 Ads (선택: Google AdSense)
 
@@ -37,6 +38,7 @@
 메모
 - 비워두면 “같은 origin”에서 `/works/*`를 로드하는 방식으로 fallback 할 수 있다(구현에서 결정).
 - 다른 origin을 쓰는 경우, works 호스팅에 CORS 헤더 설정이 필요할 수 있다.
+- 운영 점검 시에는 앱 네트워크 탭에서 원문이 실제 `worksBaseUrl` origin에서 내려오는지까지 확인한다.
 
 ## 2) 레거시(프로토타입) — NextAuth/Cognito/Amplify
 
