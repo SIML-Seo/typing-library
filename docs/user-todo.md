@@ -36,8 +36,9 @@
 
 ### 1.2 실제 공개 작품 저장소 준비
 
-- [ ] `works` 전용 저장소를 만든다
-  - 별도 repo로 운영하고, 나중에 앱 repo에 `works/` submodule로 연결
+- [x] `works` 전용 저장소를 만든다
+  - `typing-library-works`
+  - 앱 repo의 `works/` submodule로 연결 완료
 - [ ] 실제 공개 작품 텍스트를 넣는다
   - UTF-8 / LF 규칙
   - 저작권 만료 작품만
