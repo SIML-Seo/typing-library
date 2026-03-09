@@ -56,8 +56,8 @@
 
 ### 1.3 실제 works origin 연결
 
-- [ ] works origin으로 쓸 실제 호스팅 URL을 정한다
-  - 현재 후보: `https://typing-library-works.web.app`
+- [x] works origin으로 쓸 실제 호스팅 URL을 정한다
+  - 확정: `https://typing-library-works.web.app`
 - [ ] 배포 환경에 `NEXT_PUBLIC_WORKS_BASE_URL`을 설정한다
 - [ ] works만 따로 배포할 수 있는 운영 절차를 실제 계정 기준으로 만든다
 
