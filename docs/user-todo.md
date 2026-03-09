@@ -58,8 +58,10 @@
 
 - [x] works origin으로 쓸 실제 호스팅 URL을 정한다
   - 확정: `https://typing-library-works.web.app`
-- [ ] 배포 환경에 `NEXT_PUBLIC_WORKS_BASE_URL`을 설정한다
-- [ ] works만 따로 배포할 수 있는 운영 절차를 실제 계정 기준으로 만든다
+- [x] 배포 환경에 `NEXT_PUBLIC_WORKS_BASE_URL`을 설정한다
+  - 현재 앱 배포에는 `.env.production.local` 기준으로 반영 완료
+- [x] works만 따로 배포할 수 있는 운영 절차를 실제 계정 기준으로 만든다
+  - 실제 배포 확인: `firebase deploy --only hosting:works`
 
 관련 문서
 - `/mnt/c/Users/Neolab-WON/Desktop/another/typing-library/docs/env.md:32`
