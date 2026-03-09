@@ -165,7 +165,7 @@ export default defineMessages({
       sourceFallback: 'À ajouter au works catalog',
       nextLabel: 'Connexion suivante',
       nextDescription:
-        'L’étape suivante consiste à relier l’œuvre choisie à la route de frappe par paragraphe /typing/[workId]. Pour l’instant, seul le flux de sélection et la frontière de données sont fixés.',
+        'L’étape suivante consiste à relier l’œuvre choisie à l’écran de frappe par paragraphe. Pour l’instant, seul le flux de sélection et la frontière de données sont fixés.',
     },
     side: {
       worksOriginLabel: 'Works origin',

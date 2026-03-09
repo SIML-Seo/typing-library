@@ -23,7 +23,7 @@
 ### 2.1 URL / 라우트 상태
 
 - 현재 화면, 작품 ID, 파트 ID처럼 **주소로 표현 가능한 상태**
-- 예: `/typing/[workId]`, `/results`
+- 예: `/typing?workId=...`, `/results`
 
 ### 2.2 React local state
 

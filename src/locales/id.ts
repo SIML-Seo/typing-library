@@ -164,7 +164,7 @@ export default defineMessages({
       sourceFallback: 'Akan ditambahkan ke works catalog',
       nextLabel: 'Koneksi berikutnya',
       nextDescription:
-        'Langkah berikutnya adalah menghubungkan karya terpilih ke rute mengetik per paragraf /typing/[workId]. Untuk saat ini, yang dikunci lebih dulu adalah alur pemilihan dan batas data.',
+        'Langkah berikutnya adalah menghubungkan karya terpilih ke layar mengetik per paragraf. Untuk saat ini, yang dikunci lebih dulu adalah alur pemilihan dan batas data.',
     },
     side: {
       worksOriginLabel: 'Works origin',

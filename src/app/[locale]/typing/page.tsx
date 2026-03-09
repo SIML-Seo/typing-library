@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import TypingPage from '@/features/typing/TypingPage';
+import TypingRoutePage from '@/features/typing/TypingRoutePage';
 import { getLocaleMessages } from '@/locales/get-messages';
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string; workId: string }>;
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const messages = getLocaleMessages(locale);
@@ -20,12 +20,6 @@ export async function generateMetadata({
   };
 }
 
-export default async function LocalizedTypingRoute({
-  params,
-}: {
-  params: Promise<{ locale: string; workId: string }>;
-}) {
-  const { workId } = await params;
-
-  return <TypingPage workId={workId} />;
+export default function LocalizedTypingRoute() {
+  return <TypingRoutePage />;
 }

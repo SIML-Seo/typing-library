@@ -8,12 +8,7 @@
         "**/.*",
         "**/node_modules/**"
       ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ],
+      "cleanUrls": true,
       "headers": [
         {
           "source": "/robots.txt",

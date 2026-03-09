@@ -6,6 +6,7 @@ import { useCurrentLocale, useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import { listMyWorks } from '@/shared/db';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
+import { buildTypingPath } from '@/features/typing/route';
 import { useWorksCatalog } from './useWorksCatalog';
 
 export default function LibraryPage() {
@@ -74,7 +75,11 @@ export default function LibraryPage() {
 
   const selectedWork =
     filteredItems.find((item) => item.id === selectedWorkId) ?? filteredItems[0] ?? null;
-  const typingPath = selectedWork ? getLocalizedPath(locale, `/typing/${selectedWork.id}`) : null;
+  const typingPath = selectedWork
+    ? buildTypingPath(locale, {
+        workId: selectedWork.id,
+      })
+    : null;
   const myWorksPath = getLocalizedPath(locale, '/my-works');
   const resultsPath = getLocalizedPath(locale, '/results');
 

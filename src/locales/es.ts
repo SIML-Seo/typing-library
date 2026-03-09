@@ -164,7 +164,7 @@ export default defineMessages({
       sourceFallback: 'Se añadirá al works catalog',
       nextLabel: 'Siguiente conexión',
       nextDescription:
-        'El siguiente paso es conectar la obra elegida a la ruta de transcripción por párrafos en /typing/[workId]. Por ahora solo se fija el flujo de selección y el límite de datos.',
+        'El siguiente paso es conectar la obra elegida a la pantalla de transcripción por párrafos. Por ahora solo se fija el flujo de selección y el límite de datos.',
     },
     side: {
       worksOriginLabel: 'Works origin',

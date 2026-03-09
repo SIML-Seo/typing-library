@@ -160,7 +160,7 @@ export default defineMessages({
       sourceFallback: '稍後補到 works catalog',
       nextLabel: '下一步連接',
       nextDescription:
-        '下一階段會把選中的作品接到 /typing/[workId] 的段落筆寫路由。現在先把作品選擇流程與資料邊界固定下來。',
+        '下一階段會把選中的作品接到段落筆寫畫面。現在先把作品選擇流程與資料邊界固定下來。',
     },
     side: {
       worksOriginLabel: 'Works origin',

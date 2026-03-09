@@ -7,6 +7,7 @@ import { getLocalizedPath } from '@/locales/config';
 import { listMyWorks, removeMyWork, saveMyWork, type MyWorkRecord } from '@/shared/db';
 import { buildMyWorkUploadEventParams, trackGa4Event } from '@/shared/analytics/ga4';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
+import { buildTypingPath } from '@/features/typing/route';
 import { createMyWorkRecord } from './record';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
@@ -331,7 +332,10 @@ export default function MyWorksPage() {
 
                   <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                     <Link
-                      href={getLocalizedPath(locale, `/typing/my/${work.id}`)}
+                      href={buildTypingPath(locale, {
+                        workId: work.id,
+                        workKind: 'my',
+                      })}
                       className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-strong)]"
                     >
                       {t('myWorks.list.startTyping')}

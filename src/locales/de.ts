@@ -165,7 +165,7 @@ export default defineMessages({
       sourceFallback: 'Wird später im works catalog ergänzt',
       nextLabel: 'Nächste Verbindung',
       nextDescription:
-        'Im nächsten Schritt wird das gewählte Werk an die absatzbasierte Route /typing/[workId] angeschlossen. Vorerst werden nur Auswahlfluss und Datengrenze festgelegt.',
+        'Im nächsten Schritt wird das gewählte Werk an den absatzbasierten Tippbildschirm angeschlossen. Vorerst werden nur Auswahlfluss und Datengrenze festgelegt.',
     },
     side: {
       worksOriginLabel: 'Works origin',

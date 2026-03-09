@@ -164,7 +164,7 @@ export default defineMessages({
       sourceFallback: 'Será adicionado ao works catalog',
       nextLabel: 'Próxima conexão',
       nextDescription:
-        'O próximo passo é conectar a obra escolhida à rota de digitação por parágrafos em /typing/[workId]. Por enquanto, apenas o fluxo de seleção e o limite de dados foram fixados.',
+        'O próximo passo é conectar a obra escolhida à tela de digitação por parágrafos. Por enquanto, apenas o fluxo de seleção e o limite de dados foram fixados.',
     },
     side: {
       worksOriginLabel: 'Works origin',

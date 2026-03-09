@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import I18nClientProvider from '@/components/I18nClientProvider';
-import TypingPage from '@/features/typing/TypingPage';
+import TypingRoutePage from '@/features/typing/TypingRoutePage';
 import { DEFAULT_LOCALE } from '@/locales/config';
 import { getLocaleMessages } from '@/locales/get-messages';
 
@@ -15,16 +15,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DefaultMyTypingRoute({
-  params,
-}: {
-  params: Promise<{ workId: string }>;
-}) {
-  const { workId } = await params;
-
+export default function TypingRoute() {
   return (
     <I18nClientProvider locale={DEFAULT_LOCALE}>
-      <TypingPage workId={workId} workKind="my" />
+      <TypingRoutePage />
     </I18nClientProvider>
   );
 }

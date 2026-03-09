@@ -164,7 +164,7 @@ export default defineMessages({
       sourceFallback: 'works catalog에 추가 예정',
       nextLabel: '다음 연결',
       nextDescription:
-        '다음 단계에서 선택한 작품을 /typing/[workId] 문단 필사 화면으로 연결한다. 지금은 작품 선택과 데이터 경계만 먼저 고정했다.',
+        '다음 단계에서 선택한 작품을 문단 필사 화면으로 연결한다. 지금은 작품 선택과 데이터 경계만 먼저 고정했다.',
     },
     side: {
       worksOriginLabel: 'Works origin',

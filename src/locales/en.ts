@@ -164,7 +164,7 @@ export default defineMessages({
       sourceFallback: 'To be added in the works catalog',
       nextLabel: 'Next connection',
       nextDescription:
-        'The next step is to connect the selected work to the paragraph typing route at /typing/[workId]. For now, only the selection flow and data boundary are fixed.',
+        'The next step is to connect the selected work to the paragraph typing screen. For now, only the selection flow and data boundary are fixed.',
     },
     side: {
       worksOriginLabel: 'Works origin',

@@ -164,7 +164,7 @@ export default defineMessages({
       sourceFallback: 'works catalog に追加予定',
       nextLabel: '次の接続',
       nextDescription:
-        '次の段階では、選択した作品を /typing/[workId] の段落筆写ルートへ接続します。今は作品選択とデータ境界だけを先に固定しています。',
+        '次の段階では、選択した作品を段落筆写画面へ接続します。今は作品選択とデータ境界だけを先に固定しています。',
     },
     side: {
       worksOriginLabel: 'Works origin',

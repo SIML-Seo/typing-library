@@ -48,7 +48,7 @@
 - [ ] `firebase-tools` 설치 후 로그인
 - [ ] `firebase init hosting` 실행
   - public 디렉터리: `out`
-  - SPA fallback: 필요 시 `rewrites` 설정(예: `** → /index.html`)
+  - clean URLs 사용(`cleanUrls: true`)
 - [ ] `firebase deploy`로 배포
 
 ### 3.2 공개 작품(works origin) 배포(초안)
