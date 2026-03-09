@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "typing-library"
+  },
+  "targets": {
+    "typing-library": {
+      "hosting": {
+        "app": [
+          "typing-library"
+        ],
+        "works": [
+          "typing-library-works"
+        ]
+      }
+    }
+  }
+}

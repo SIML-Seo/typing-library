@@ -16,6 +16,7 @@
 - `engineering-guidelines.md`: 방어코딩 경계, fallback 규칙, 내부 로직 단순화 원칙
 - `code-review-checklist.md`: PR 리뷰용 과한 방어코딩 / silent failure 체크리스트
 - `works-repo-guide.md`: 공개 작품 저장소 구조/메타데이터/배포 운영 가이드
+- `user-todo.md`: 사용자만 직접 해야 하는 외부 작업 체크리스트
 - `mvp-implementation-plan.md`: 현재 레포 안에서 MVP 구현을 분리하는 실제 전환 계획
 - `examples/works-repo/`: works 저장소 초기 구조 샘플
 - `examples/firebase-hosting/`: Firebase Hosting `app`/`works` 타겟 샘플 설정
