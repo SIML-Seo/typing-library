@@ -2,6 +2,7 @@ export type WorkKind = 'public' | 'my';
 export type AppTheme = 'paper' | 'dark';
 export type FontSize = 'sm' | 'md' | 'lg';
 export type TypoDisplayMode = 'inline-red' | 'underline-red';
+export type TypingSoundProfile = 'off' | 'soft' | 'mechanical' | 'typewriter';
 
 export interface VisualFilterSettings {
   brightness: number;
@@ -61,6 +62,8 @@ export interface TypingResultRecord {
     theme: AppTheme;
     fontSize: FontSize;
     typoDisplayMode: TypoDisplayMode;
+    soundProfile: TypingSoundProfile;
+    soundVolume: number;
     visualFilters: VisualFilterSettings;
   };
   paragraphReports?: ParagraphReport[];
@@ -87,6 +90,8 @@ export interface AppSettingsRecord {
   theme: AppTheme;
   fontSize: FontSize;
   typoDisplayMode: TypoDisplayMode;
+  soundProfile: TypingSoundProfile;
+  soundVolume: number;
   visualFilters: VisualFilterSettings;
   updatedAt: string;
 }

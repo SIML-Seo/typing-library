@@ -46,6 +46,8 @@ const results: TypingResultRecord[] = [
       theme: 'paper',
       fontSize: 'md',
       typoDisplayMode: 'inline-red',
+      soundProfile: 'soft',
+      soundVolume: 60,
       visualFilters: {
         brightness: 100,
         contrast: 100,
@@ -79,6 +81,8 @@ const results: TypingResultRecord[] = [
       theme: 'paper',
       fontSize: 'md',
       typoDisplayMode: 'inline-red',
+      soundProfile: 'soft',
+      soundVolume: 60,
       visualFilters: {
         brightness: 100,
         contrast: 100,

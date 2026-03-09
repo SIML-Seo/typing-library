@@ -35,6 +35,7 @@ export type {
   TypingDraftRecord,
   TypingMismatchSegment,
   TypingResultRecord,
+  TypingSoundProfile,
   TypoDisplayMode,
   VisualFilterSettings,
   WorkKind,

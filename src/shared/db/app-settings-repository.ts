@@ -17,6 +17,8 @@ export const DEFAULT_APP_SETTINGS = {
   theme: 'paper',
   fontSize: 'md',
   typoDisplayMode: 'inline-red' as const,
+  soundProfile: 'soft' as const,
+  soundVolume: 60,
   visualFilters: DEFAULT_VISUAL_FILTERS,
 } satisfies Omit<AppSettingsRecord, 'id' | 'updatedAt'>;
 

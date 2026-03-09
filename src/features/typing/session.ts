@@ -24,7 +24,13 @@ export function createTypingDraftId(workKind: WorkKind, workId: string) {
 export function pickTypingSettingsSnapshot(
   settings: Pick<
     AppSettingsRecord,
-    'punctuationAndCaseStrict' | 'theme' | 'fontSize' | 'typoDisplayMode' | 'visualFilters'
+    | 'punctuationAndCaseStrict'
+    | 'theme'
+    | 'fontSize'
+    | 'typoDisplayMode'
+    | 'soundProfile'
+    | 'soundVolume'
+    | 'visualFilters'
   >,
 ): TypingResultRecord['settingsSnapshot'] {
   return {
@@ -32,6 +38,8 @@ export function pickTypingSettingsSnapshot(
     theme: settings.theme,
     fontSize: settings.fontSize,
     typoDisplayMode: settings.typoDisplayMode,
+    soundProfile: settings.soundProfile,
+    soundVolume: settings.soundVolume,
     visualFilters: settings.visualFilters,
   };
 }
@@ -89,7 +97,13 @@ export function buildTypingResult(params: {
   elapsedTimeMs: number;
   settings: Pick<
     AppSettingsRecord,
-    'punctuationAndCaseStrict' | 'theme' | 'fontSize' | 'typoDisplayMode' | 'visualFilters'
+    | 'punctuationAndCaseStrict'
+    | 'theme'
+    | 'fontSize'
+    | 'typoDisplayMode'
+    | 'soundProfile'
+    | 'soundVolume'
+    | 'visualFilters'
   >;
   paragraphs: CompletedParagraphState[];
 }): TypingResultRecord {
