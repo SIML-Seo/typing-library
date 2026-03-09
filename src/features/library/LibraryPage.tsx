@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { useCurrentLocale, useI18n } from '@/locales/client';
+import { useAppLocale } from '@/components/I18nClientProvider';
+import { useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import { listMyWorks } from '@/shared/db';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
@@ -11,7 +12,7 @@ import { useWorksCatalog } from './useWorksCatalog';
 
 export default function LibraryPage() {
   const t = useI18n();
-  const locale = useCurrentLocale();
+  const locale = useAppLocale();
   const { items, sourceMode, status, worksBaseUrl, errorMessage } = useWorksCatalog();
   const [query, setQuery] = useState('');
   const [selectedWorkId, setSelectedWorkId] = useState<string | null>(null);

@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useAppLocale } from '@/components/I18nClientProvider';
 import { usePathname } from 'next/navigation';
-import { useCurrentLocale, useI18n } from '@/locales/client';
+import { useI18n } from '@/locales/client';
 import {
   DEFAULT_LOCALE,
   LOCALE_LABELS,
@@ -13,7 +14,7 @@ import {
 
 export default function LocaleSwitcher() {
   const t = useI18n();
-  const currentLocale = useCurrentLocale();
+  const currentLocale = useAppLocale();
   const pathname = usePathname();
   const basePath = stripLocalePrefix(pathname);
   const currentValue = LOCALE_LABELS[currentLocale] ?? LOCALE_LABELS[DEFAULT_LOCALE];

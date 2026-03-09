@@ -12,7 +12,8 @@ import {
   type FormEvent,
   type ReactNode,
 } from 'react';
-import { useCurrentLocale, useI18n } from '@/locales/client';
+import { useAppLocale } from '@/components/I18nClientProvider';
+import { useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import {
   DEFAULT_APP_SETTINGS,
@@ -91,7 +92,7 @@ function createDefaultSettingsRecord(): AppSettingsRecord {
 
 export default function TypingPage({ workId, workKind = 'public' }: TypingPageProps) {
   const t = useI18n();
-  const locale = useCurrentLocale();
+  const locale = useAppLocale();
   const { items, sourceMode, status, worksBaseUrl, errorMessage } = useWorksCatalog();
   const { isSettingsPanelOpen, setSettingsPanelOpen } = useUiStore();
   const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');

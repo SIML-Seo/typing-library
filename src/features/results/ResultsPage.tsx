@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { useCurrentLocale, useI18n } from '@/locales/client';
+import { useAppLocale } from '@/components/I18nClientProvider';
+import { useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import {
   listMyWorks,
@@ -19,7 +20,7 @@ type LocalStatus = 'loading' | 'ready' | 'error';
 
 export default function ResultsPage() {
   const t = useI18n();
-  const locale = useCurrentLocale();
+  const locale = useAppLocale();
   const { items, status: catalogStatus } = useWorksCatalog();
   const [localStatus, setLocalStatus] = useState<LocalStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

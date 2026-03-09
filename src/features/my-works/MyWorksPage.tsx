@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useState, type ChangeEvent, type ReactNode } from 'react';
-import { useCurrentLocale, useI18n } from '@/locales/client';
+import { useAppLocale } from '@/components/I18nClientProvider';
+import { useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import { listMyWorks, removeMyWork, saveMyWork, type MyWorkRecord } from '@/shared/db';
 import { buildMyWorkUploadEventParams, trackGa4Event } from '@/shared/analytics/ga4';
@@ -29,7 +30,7 @@ const EMPTY_FORM: FormState = {
 
 export default function MyWorksPage() {
   const t = useI18n();
-  const locale = useCurrentLocale();
+  const locale = useAppLocale();
   const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

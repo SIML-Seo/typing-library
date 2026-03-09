@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useAppLocale } from '@/components/I18nClientProvider';
 import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
-import { useCurrentLocale, useI18n } from '@/locales/client';
+import { useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 
 export default function LandingPage() {
   const t = useI18n();
-  const locale = useCurrentLocale();
+  const locale = useAppLocale();
   const libraryPath = getLocalizedPath(locale, '/library');
   const principles = [
     {

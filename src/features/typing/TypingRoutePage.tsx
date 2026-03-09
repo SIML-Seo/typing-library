@@ -1,15 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useAppLocale } from '@/components/I18nClientProvider';
 import { useSearchParams } from 'next/navigation';
-import { useCurrentLocale, useI18n } from '@/locales/client';
+import { useI18n } from '@/locales/client';
 import { getLocalizedPath } from '@/locales/config';
 import TypingPage from './TypingPage';
 import { parseTypingSearchParams } from './route';
 
 export default function TypingRoutePage() {
   const t = useI18n();
-  const locale = useCurrentLocale();
+  const locale = useAppLocale();
   const searchParams = useSearchParams();
   const { workId, workKind } = parseTypingSearchParams(searchParams);
   const fallbackPath = workKind === 'my' ? getLocalizedPath(locale, '/my-works') : getLocalizedPath(locale, '/library');
