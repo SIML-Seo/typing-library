@@ -69,9 +69,10 @@
 
 ### 1.4 GA4 실제 속성 연결
 
-- [ ] GA4 속성을 만든다
-- [ ] Measurement ID를 발급받는다
-- [ ] 배포 환경에 `NEXT_PUBLIC_GA4_MEASUREMENT_ID`를 넣는다
+- [x] GA4 속성을 만든다
+- [x] Measurement ID를 발급받는다
+- [x] 배포 환경에 `NEXT_PUBLIC_GA4_MEASUREMENT_ID`를 넣는다
+  - 현재 값: `G-FG2QS0JYRF`
 
 관련 문서
 - `/mnt/c/Users/Neolab-WON/Desktop/another/typing-library/docs/env.md:15`
