@@ -765,8 +765,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
     if (
       nativeEvent.inputType === 'insertFromPaste' ||
-      nativeEvent.inputType === 'insertFromDrop' ||
-      (typeof nativeEvent.data === 'string' && nativeEvent.data.length > 1)
+      nativeEvent.inputType === 'insertFromDrop'
     ) {
       event.preventDefault();
     }
@@ -840,7 +839,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
   function renderOverlay(reference: string, typed: string) {
     if (typed.length === 0) {
-      return <span className="text-[color:#8f7c6f]">{t('typing.emptyInput')}</span>;
+      return null;
     }
 
     const nodes: ReactNode[] = [];
@@ -1062,21 +1061,6 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                   }}
                   className="relative cursor-text bg-[#1c1917] px-6 py-8 sm:px-8 sm:py-10"
                 >
-                  <textarea
-                    ref={textareaRef}
-                    value={inputValue}
-                    onBeforeInput={handleBeforeInput}
-                    onChange={handleInputChange}
-                    onPaste={(event) => event.preventDefault()}
-                    onDrop={(event) => event.preventDefault()}
-                    spellCheck={false}
-                    autoCapitalize="off"
-                    autoCorrect="off"
-                    readOnly={sessionState !== 'active' || pendingParagraphReport !== null}
-                    className="absolute inset-0 h-full w-full resize-none opacity-0"
-                    aria-label={t('typing.startTyping')}
-                  />
-
                   <p className="mb-6 text-xs text-[#78716c]">
                     {sessionState === 'completed'
                       ? t('typing.actions.completed')
@@ -1084,6 +1068,20 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                   </p>
 
                   <div className="relative min-h-[20rem] sm:min-h-[26rem]">
+                    <textarea
+                      ref={textareaRef}
+                      value={inputValue}
+                      onBeforeInput={handleBeforeInput}
+                      onChange={handleInputChange}
+                      onPaste={(event) => event.preventDefault()}
+                      onDrop={(event) => event.preventDefault()}
+                      spellCheck={false}
+                      autoCapitalize="off"
+                      autoCorrect="off"
+                      readOnly={sessionState !== 'active' || pendingParagraphReport !== null}
+                      aria-label={t('typing.startTyping')}
+                      className={`absolute inset-0 z-10 h-full w-full resize-none overflow-hidden border-0 bg-transparent p-0 ${fontSizeClassName} text-transparent outline-none`}
+                    />
                     <pre className={`pointer-events-none whitespace-pre-wrap break-words ${fontSizeClassName} text-[color:var(--typing-ghost)]`}>
                       {currentParagraph}
                     </pre>
