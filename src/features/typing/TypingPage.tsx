@@ -1054,7 +1054,11 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                   tabIndex={0}
                   onClick={() => textareaRef.current?.focus()}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
+                    if (event.target !== event.currentTarget) {
+                      return;
+                    }
+
+                    if (event.key === 'Enter') {
                       event.preventDefault();
                       textareaRef.current?.focus();
                     }
