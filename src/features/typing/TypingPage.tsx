@@ -1050,19 +1050,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
                 {/* Typing area */}
                 <div
-                  role="button"
-                  tabIndex={0}
                   onClick={() => textareaRef.current?.focus()}
-                  onKeyDown={(event) => {
-                    if (event.target !== event.currentTarget) {
-                      return;
-                    }
-
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      textareaRef.current?.focus();
-                    }
-                  }}
                   className="relative cursor-text bg-[#1c1917] px-6 py-8 sm:px-8 sm:py-10"
                 >
                   <p className="mb-6 text-xs text-[#78716c]">
@@ -1079,12 +1067,13 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       onChange={handleInputChange}
                       onPaste={(event) => event.preventDefault()}
                       onDrop={(event) => event.preventDefault()}
+                      onKeyDownCapture={(event) => event.stopPropagation()}
                       spellCheck={false}
                       autoCapitalize="off"
                       autoCorrect="off"
                       readOnly={sessionState !== 'active' || pendingParagraphReport !== null}
                       aria-label={t('typing.startTyping')}
-                      className={`absolute inset-0 z-10 h-full w-full resize-none overflow-hidden border-0 bg-transparent p-0 ${fontSizeClassName} text-transparent outline-none`}
+                      className={`absolute inset-0 z-10 h-full w-full resize-none overflow-hidden border-0 bg-transparent p-0 opacity-0 ${fontSizeClassName} outline-none`}
                     />
                     <pre className={`pointer-events-none whitespace-pre-wrap break-words ${fontSizeClassName} text-[color:var(--typing-ghost)]`}>
                       {currentParagraph}
