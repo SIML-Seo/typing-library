@@ -1,12 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4efe6;
-  --foreground: #1d1611;
-  --muted: #6d5f54;
-  --line: rgba(43, 28, 19, 0.12);
-  --accent: #a14431;
-  --accent-strong: #7d2d20;
+  --background: #faf9f7;
+  --foreground: #1a1a1a;
+  --muted: #71717a;
+  --line: rgba(0, 0, 0, 0.08);
+  --accent: #c2410c;
+  --accent-strong: #9a3412;
+  --accent-soft: rgba(194, 65, 12, 0.08);
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f4f4f5;
 }
 
 @theme inline {
@@ -25,11 +29,11 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(circle at top, rgba(161, 68, 49, 0.08), transparent 28%),
-    linear-gradient(180deg, #f6f1e8 0%, #f3ede3 48%, #efe8de 100%);
+  background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-body), serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a,
@@ -39,6 +43,70 @@ summary {
 }
 
 ::selection {
-  background: rgba(161, 68, 49, 0.18);
+  background: rgba(194, 65, 12, 0.14);
   color: var(--foreground);
+}
+
+/* Shared nav link style */
+.nav-link {
+  color: var(--muted);
+  transition: color 0.15s;
+}
+.nav-link:hover {
+  color: var(--foreground);
+}
+
+/* Fade-in animation for page content */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s ease-out both;
+}
+
+.animate-fade-up-delay-1 {
+  animation: fadeUp 0.5s ease-out 0.1s both;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fadeUp 0.5s ease-out 0.2s both;
+}
+
+.animate-fade-up-delay-3 {
+  animation: fadeUp 0.5s ease-out 0.3s both;
+}
+
+/* Smooth details/summary */
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] > summary ~ * {
+  animation: fadeUp 0.2s ease-out both;
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
 }

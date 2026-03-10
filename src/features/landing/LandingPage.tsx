@@ -56,59 +56,33 @@ export default function LandingPage() {
       answer: t('landing.faq.item5Answer'),
     },
   ];
-  const facts = [
-    {
-      label: t('landing.facts.principleLabel'),
-      value: t('landing.facts.principleValue'),
-    },
-    {
-      label: t('landing.facts.worksLabel'),
-      value: t('landing.facts.worksValue'),
-    },
-    {
-      label: t('landing.facts.typoLabel'),
-      value: t('landing.facts.typoValue'),
-    },
-  ];
 
   return (
-    <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(circle_at_top,_rgba(187,88,58,0.18),_transparent_55%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-56 h-80 w-80 -translate-x-1/2 rounded-full bg-[rgba(110,40,30,0.08)] blur-3xl" />
-
+    <div className="min-h-screen">
+      {/* Header */}
       <header
         id="top"
-        className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:rgba(244,239,230,0.82)] backdrop-blur"
+        className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:rgba(250,249,247,0.92)] backdrop-blur-xl"
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-          <a href="#top" className="flex items-center gap-3">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.7)] text-sm font-semibold tracking-[0.2em] text-[color:var(--accent)]">
-              TL
-            </span>
-            <span className="flex flex-col">
-              <span className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted)]">
-                {t('common.brandName')}
-              </span>
-              <span className="text-sm text-[color:var(--foreground)]">
-                {t('common.brandTagline')}
-              </span>
-            </span>
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5">
+          <a href="#top" className="text-base font-semibold tracking-tight text-[color:var(--foreground)]">
+            {t('common.brandName')}
           </a>
 
-          <nav className="hidden items-center gap-6 text-sm text-[color:var(--muted)] md:flex">
+          <nav className="hidden items-center gap-1 md:flex">
             <Link
               href={libraryPath}
-              className="transition hover:text-[color:var(--foreground)]"
+              className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]"
             >
               {t('landing.nav.library')}
             </Link>
-            <a href="#preview" className="transition hover:text-[color:var(--foreground)]">
+            <a href="#preview" className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]">
               {t('landing.nav.preview')}
             </a>
-            <a href="#principles" className="transition hover:text-[color:var(--foreground)]">
+            <a href="#principles" className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]">
               {t('landing.nav.principles')}
             </a>
-            <a href="#faq" className="transition hover:text-[color:var(--foreground)]">
+            <a href="#faq" className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]">
               {t('landing.nav.faq')}
             </a>
           </nav>
@@ -118,80 +92,69 @@ export default function LandingPage() {
       </header>
 
       <main>
-        <section className="mx-auto grid max-w-7xl gap-16 px-6 py-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(380px,0.95fr)] lg:px-10 lg:py-24">
-          <div className="flex flex-col justify-center">
-            <p className="mb-6 text-xs uppercase tracking-[0.34em] text-[color:var(--accent)]">
-              {t('landing.hero.eyebrow')}
-            </p>
-            <h1 className="max-w-4xl [font-family:var(--font-display)] text-5xl leading-[1.05] tracking-[-0.04em] text-[color:var(--foreground)] sm:text-6xl lg:text-7xl">
-              {t('landing.hero.title')}
-            </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-[color:var(--muted)] sm:text-lg">
-              {t('landing.hero.description')}
-            </p>
+        {/* Hero */}
+        <section className="animate-fade-up mx-auto max-w-6xl px-5 pb-20 pt-20 lg:pt-28">
+          <p className="text-sm tracking-wide text-[color:var(--muted)]">
+            {t('landing.hero.eyebrow')}
+          </p>
+          <h1 className="mt-5 max-w-3xl text-[clamp(2rem,5vw,3.5rem)] leading-[1.15] tracking-tight [font-family:var(--font-display)] text-[color:var(--foreground)]">
+            {t('landing.hero.title')}
+          </h1>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-[color:var(--muted)]">
+            {t('landing.hero.description')}
+          </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link
-                href={libraryPath}
-                className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-white transition hover:translate-y-[-1px] hover:bg-[color:var(--accent-strong)]"
-              >
-                {t('landing.hero.primaryAction')}
-              </Link>
-              <a
-                href="#principles"
-                className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.68)] px-6 py-3 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
-              >
-                {t('landing.hero.secondaryAction')}
-              </a>
-            </div>
-
-            <div className="mt-12 grid gap-3 sm:grid-cols-3">
-              {facts.map((fact) => (
-                <div
-                  key={fact.label}
-                  className="rounded-[1.75rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.68)] px-5 py-4 shadow-[0_20px_60px_rgba(47,28,19,0.06)]"
-                >
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
-                    {fact.label}
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-[color:var(--foreground)]">
-                    {fact.value}
-                  </p>
-                </div>
-              ))}
-            </div>
+          <div className="mt-10 flex items-center gap-4">
+            <Link
+              href={libraryPath}
+              className="inline-flex items-center rounded-lg bg-[color:var(--foreground)] px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+            >
+              {t('landing.hero.primaryAction')}
+            </Link>
+            <a
+              href="#principles"
+              className="inline-flex items-center rounded-lg px-5 py-2.5 text-sm font-medium text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]"
+            >
+              {t('landing.hero.secondaryAction')}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-1.5">
+                <path d="M7 17L17 7M17 7H7M17 7v10" />
+              </svg>
+            </a>
           </div>
+        </section>
 
-          <div id="preview" className="relative">
-            <div className="absolute -left-4 top-10 hidden h-28 w-28 rounded-full border border-[color:rgba(163,59,43,0.18)] lg:block" />
-            <div className="rounded-[2rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,243,236,0.92))] p-6 shadow-[0_30px_120px_rgba(60,34,24,0.16)]">
-              <div className="flex items-center justify-between border-b border-[color:var(--line)] pb-4">
+        {/* Preview */}
+        <section id="preview" className="animate-fade-up-delay-1 mx-auto max-w-6xl px-5 pb-24">
+          <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
+            {/* Typing demo card */}
+            <div className="overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface)]">
+              <div className="flex items-center justify-between border-b border-[color:var(--line)] px-6 py-4">
                 <div>
-                  <p className="text-[11px] uppercase tracking-[0.28em] text-[color:var(--muted)]">
-                    {t('landing.preview.eyebrow')}
-                  </p>
-                  <p className="mt-2 text-lg [font-family:var(--font-display)]">
+                  <p className="text-sm text-[color:var(--muted)]">{t('landing.preview.eyebrow')}</p>
+                  <p className="mt-1 text-lg [font-family:var(--font-display)]">
                     {t('landing.preview.title')}
                   </p>
                 </div>
-                <div className="rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-4 py-2 text-xs text-[color:var(--muted)]">
+                <span className="rounded-md bg-[color:var(--surface-sunken)] px-2.5 py-1 text-xs text-[color:var(--muted)]">
                   {t('landing.preview.chunkBadge')}
-                </div>
+                </span>
               </div>
 
-              <div className="mt-8 rounded-[1.5rem] bg-[color:#181310] px-6 py-7 text-[15px] leading-8 text-[color:#ddd0c3] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-                <p className="mb-5 text-[11px] uppercase tracking-[0.24em] text-[color:#8f7c6f]">
+              <div className="bg-[#1c1917] px-6 py-8 font-mono text-[15px] leading-8">
+                <p className="mb-4 text-xs tracking-wider text-[#78716c]">
                   {t('landing.preview.paragraphLabel')}
                 </p>
-                <p className="text-[color:#9d8f84]">
-                  {t('landing.preview.ghostText')}
-                </p>
-                <p className="-mt-8 text-[color:#f6eee6]">
-                  {t('landing.preview.typedPrefix')}
-                  <span className="text-[color:#de6e64]">{t('landing.preview.typedError')}</span>
-                  {t('landing.preview.typedSuffix')}
-                </p>
-                <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                <div className="relative">
+                  <p className="text-[#57534e]">
+                    {t('landing.preview.ghostText')}
+                  </p>
+                  <p className="absolute inset-0 text-[#fafaf9]">
+                    {t('landing.preview.typedPrefix')}
+                    <span className="text-red-400">{t('landing.preview.typedError')}</span>
+                    {t('landing.preview.typedSuffix')}
+                  </p>
+                </div>
+                <div className="mt-8 grid grid-cols-3 gap-3">
                   <StatBadge
                     label={t('landing.preview.accuracyLabel')}
                     value={t('landing.preview.accuracyValue')}
@@ -207,7 +170,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-px border-t border-[color:var(--line)] bg-[color:var(--line)] sm:grid-cols-2">
                 <NoteCard
                   label={t('landing.preview.noteRuleLabel')}
                   body={t('landing.preview.noteRuleBody')}
@@ -218,33 +181,50 @@ export default function LandingPage() {
                 />
               </div>
             </div>
+
+            {/* Facts sidebar */}
+            <div className="flex flex-col gap-4">
+              <FactCard
+                label={t('landing.facts.principleLabel')}
+                value={t('landing.facts.principleValue')}
+              />
+              <FactCard
+                label={t('landing.facts.worksLabel')}
+                value={t('landing.facts.worksValue')}
+              />
+              <FactCard
+                label={t('landing.facts.typoLabel')}
+                value={t('landing.facts.typoValue')}
+              />
+            </div>
           </div>
         </section>
 
+        {/* Principles */}
         <section
           id="principles"
-          className="border-y border-[color:var(--line)] bg-[color:rgba(255,255,255,0.42)]"
+          className="border-y border-[color:var(--line)] bg-[color:var(--surface)]"
         >
-          <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-24">
-            <SectionIntro
+          <div className="mx-auto max-w-6xl px-5 py-20 lg:py-24">
+            <SectionHeader
               eyebrow={t('landing.principles.eyebrow')}
               title={t('landing.principles.title')}
               description={t('landing.principles.description')}
             />
 
-            <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {principles.map((item) => (
+            <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--line)] md:grid-cols-2 xl:grid-cols-4">
+              {principles.map((item, index) => (
                 <article
                   key={item.title}
-                  className="rounded-[1.75rem] border border-[color:var(--line)] bg-[color:rgba(250,247,241,0.88)] p-6 shadow-[0_18px_50px_rgba(53,31,22,0.06)]"
+                  className="bg-[color:var(--background)] p-6"
                 >
-                  <p className="text-[11px] uppercase tracking-[0.26em] text-[color:var(--accent)]">
-                    principle
-                  </p>
-                  <h2 className="mt-4 text-xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+                  <span className="text-sm tabular-nums text-[color:var(--accent)]">
+                    0{index + 1}
+                  </span>
+                  <h2 className="mt-4 text-lg font-medium text-[color:var(--foreground)]">
                     {item.title}
                   </h2>
-                  <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
+                  <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
                     {item.body}
                   </p>
                 </article>
@@ -253,26 +233,24 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-24">
-          <SectionIntro
+        {/* Flow */}
+        <section className="mx-auto max-w-6xl px-5 py-20 lg:py-24">
+          <SectionHeader
             eyebrow={t('landing.flow.eyebrow')}
             title={t('landing.flow.title')}
             description={t('landing.flow.description')}
           />
 
-          <div className="mt-10 grid gap-4 lg:grid-cols-4">
+          <div className="mt-12 grid gap-4 lg:grid-cols-4">
             {steps.map((step, index) => (
               <div
                 key={step}
-                className="relative overflow-hidden rounded-[1.75rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.68)] p-6"
+                className="group relative rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] p-6 transition hover:border-[color:var(--accent)] hover:shadow-sm"
               >
-                <div className="absolute right-5 top-4 text-5xl [font-family:var(--font-display)] text-[color:rgba(163,59,43,0.12)]">
-                  0{index + 1}
-                </div>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
-                  step {index + 1}
-                </p>
-                <p className="relative mt-8 text-lg leading-8 text-[color:var(--foreground)]">
+                <span className="text-4xl font-light tabular-nums text-[color:var(--line)] transition group-hover:text-[color:var(--accent-soft)]">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <p className="mt-4 text-base leading-relaxed text-[color:var(--foreground)]">
                   {step}
                 </p>
               </div>
@@ -280,29 +258,39 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* FAQ */}
         <section
           id="faq"
-          className="mx-auto max-w-5xl px-6 pb-20 lg:px-10 lg:pb-28"
+          className="mx-auto max-w-3xl px-5 pb-24"
         >
-          <SectionIntro
+          <SectionHeader
             eyebrow={t('landing.faq.eyebrow')}
             title={t('landing.faq.title')}
             description={t('landing.faq.description')}
           />
 
-          <div className="mt-8 space-y-4">
+          <div className="mt-10 divide-y divide-[color:var(--line)]">
             {faqs.map((item) => (
               <details
                 key={item.question}
-                className="group rounded-[1.5rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-6 py-5"
+                className="group"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg [font-family:var(--font-display)] text-[color:var(--foreground)] marker:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left text-base font-medium text-[color:var(--foreground)] marker:hidden">
                   {item.question}
-                  <span className="text-sm text-[color:var(--accent)] transition group-open:rotate-45">
-                    ＋
-                  </span>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className="shrink-0 text-[color:var(--muted)] transition-transform duration-200 group-open:rotate-45"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
                 </summary>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
+                <p className="pb-5 pr-8 text-sm leading-relaxed text-[color:var(--muted)]">
                   {item.answer}
                 </p>
               </details>
@@ -311,21 +299,22 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-[color:var(--line)] bg-[color:#181310] text-[color:#e7dbcf]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-10 px-6 py-12 lg:flex-row lg:items-end lg:justify-between lg:px-10">
-          <div className="max-w-xl">
-            <p className="text-[11px] uppercase tracking-[0.34em] text-[color:#b79d8e]">
+      {/* Footer */}
+      <footer className="border-t border-[color:var(--line)] bg-[color:var(--foreground)] text-white">
+        <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-lg">
+            <p className="text-sm text-white/50">
               {t('landing.footer.eyebrow')}
             </p>
-            <p className="mt-4 text-2xl [font-family:var(--font-display)]">
+            <p className="mt-4 text-xl [font-family:var(--font-display)]">
               {t('landing.footer.title')}
             </p>
-            <p className="mt-4 text-sm leading-7 text-[color:#bdaea1]">
+            <p className="mt-4 text-sm leading-relaxed text-white/60">
               {t('landing.footer.description')}
             </p>
           </div>
 
-          <div className="grid gap-2 text-sm text-[color:#cdbfb5]">
+          <nav className="flex flex-col gap-2 text-sm text-white/50">
             <Link href={libraryPath} className="transition hover:text-white">
               {t('landing.footer.library')}
             </Link>
@@ -338,14 +327,14 @@ export default function LandingPage() {
             <a href="#faq" className="transition hover:text-white">
               {t('landing.footer.faq')}
             </a>
-          </div>
+          </nav>
         </div>
       </footer>
     </div>
   );
 }
 
-function SectionIntro({
+function SectionHeader({
   eyebrow,
   title,
   description,
@@ -355,14 +344,14 @@ function SectionIntro({
   description: string;
 }) {
   return (
-    <div className="max-w-3xl">
-      <p className="text-xs uppercase tracking-[0.32em] text-[color:var(--accent)]">
+    <div className="max-w-2xl">
+      <p className="text-sm font-medium text-[color:var(--accent)]">
         {eyebrow}
       </p>
-      <h2 className="mt-4 text-4xl leading-tight [font-family:var(--font-display)] text-[color:var(--foreground)] sm:text-5xl">
+      <h2 className="mt-3 text-2xl leading-snug [font-family:var(--font-display)] text-[color:var(--foreground)] sm:text-3xl">
         {title}
       </h2>
-      <p className="mt-5 text-base leading-8 text-[color:var(--muted)]">
+      <p className="mt-4 text-base leading-relaxed text-[color:var(--muted)]">
         {description}
       </p>
     </div>
@@ -371,24 +360,29 @@ function SectionIntro({
 
 function StatBadge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[color:rgba(255,255,255,0.08)] bg-[color:rgba(255,255,255,0.03)] px-4 py-3">
-      <p className="text-[11px] uppercase tracking-[0.22em] text-[color:#8f7c6f]">
-        {label}
-      </p>
-      <p className="mt-2 text-sm text-[color:#f6eee6]">{value}</p>
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2.5">
+      <p className="text-xs text-[#a8a29e]">{label}</p>
+      <p className="mt-1 text-sm text-[#fafaf9]">{value}</p>
     </div>
   );
 }
 
 function NoteCard({ label, body }: { label: string; body: string }) {
   return (
-    <div className="rounded-[1.35rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.58)] px-5 py-4">
-      <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
-        {label}
-      </p>
-      <p className="mt-2 text-sm leading-7 text-[color:var(--foreground)]">
+    <div className="bg-[color:var(--background)] px-6 py-5">
+      <p className="text-xs font-medium text-[color:var(--muted)]">{label}</p>
+      <p className="mt-2 text-sm leading-relaxed text-[color:var(--foreground)]">
         {body}
       </p>
+    </div>
+  );
+}
+
+function FactCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] p-5">
+      <p className="text-xs text-[color:var(--muted)]">{label}</p>
+      <p className="mt-2 text-sm font-medium text-[color:var(--foreground)]">{value}</p>
     </div>
   );
 }

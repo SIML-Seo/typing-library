@@ -39,7 +39,6 @@ import {
   trackGa4Event,
   type Ga4CommonContext,
 } from '@/shared/analytics/ga4';
-import LocaleSwitcher from '@/shared/components/LocaleSwitcher';
 import { useUiStore } from '@/shared/store';
 import { useWorksCatalog } from '@/features/library/useWorksCatalog';
 import { loadWorkParagraphs } from './load-work-paragraphs';
@@ -206,16 +205,16 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
     () =>
       ({
         '--page-bg': isDarkTheme ? '#0f0d0b' : 'var(--background)',
-        '--header-bg': isDarkTheme ? 'rgba(18,14,11,0.92)' : 'rgba(244,239,230,0.88)',
-        '--card-bg': isDarkTheme ? 'rgba(28,23,19,0.9)' : 'rgba(255,255,255,0.68)',
+        '--header-bg': isDarkTheme ? 'rgba(15,13,11,0.92)' : 'rgba(250,249,247,0.92)',
+        '--card-bg': isDarkTheme ? 'rgba(28,23,19,0.9)' : '#ffffff',
         '--card-bg-strong': isDarkTheme
           ? 'linear-gradient(180deg,rgba(28,23,19,0.96),rgba(21,17,14,0.96))'
-          : 'linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,243,236,0.88))',
-        '--card-bg-soft': isDarkTheme ? 'rgba(28,23,19,0.76)' : 'rgba(255,255,255,0.72)',
-        '--card-bg-soft-strong': isDarkTheme ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.62)',
-        '--typing-ghost': isDarkTheme ? '#7f7064' : '#8f7c6f',
-        '--typing-ok': isDarkTheme ? '#f4e9dd' : '#f8f0e8',
-        '--typing-error': '#de6e64',
+          : 'none',
+        '--card-bg-soft': isDarkTheme ? 'rgba(28,23,19,0.76)' : '#ffffff',
+        '--card-bg-soft-strong': isDarkTheme ? 'rgba(255,255,255,0.04)' : 'var(--surface-sunken)',
+        '--typing-ghost': isDarkTheme ? '#57534e' : '#a1a1aa',
+        '--typing-ok': isDarkTheme ? '#fafaf9' : '#1a1a1a',
+        '--typing-error': '#ef4444',
       }) as CSSProperties,
     [isDarkTheme],
   );
@@ -927,41 +926,41 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
   return (
     <div className="min-h-screen bg-[color:var(--page-bg)]" style={themeStyles}>
-      <header className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:var(--header-bg)] backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-4 lg:px-6">
+      <header className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:var(--header-bg)] backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-5">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[11px] uppercase tracking-[0.28em] text-[color:var(--accent)]">
-              {selectedWork?.title ?? workId}
-            </p>
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[color:var(--muted)]">
-              <span className="truncate text-[color:var(--foreground)]">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="truncate font-medium text-[color:var(--foreground)]">
+                {selectedWork?.title ?? workId}
+              </span>
+              <span className="text-[color:var(--muted)]">·</span>
+              <span className="truncate text-[color:var(--muted)]">
                 {selectedWork?.author ?? t('library.catalog.authorFallback')}
               </span>
-              <span>•</span>
-              <span>{modeLabel}</span>
-              <span>•</span>
-              <span>{autosaveLabel}</span>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <LocaleSwitcher />
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setSettingsPanelOpen(true)}
-              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-4 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              className="rounded-lg p-2 text-[color:var(--muted)] transition hover:bg-[color:var(--card-bg-soft-strong)] hover:text-[color:var(--foreground)]"
+              aria-label={t('typing.settings.open')}
             >
-              {t('typing.settings.open')}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
             </button>
             <Link
               href={resultsPath}
-              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-4 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]"
             >
               {t('results.navLabel')}
             </Link>
             <Link
               href={backPath}
-              className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-4 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]"
             >
               {backLabel}
             </Link>
@@ -980,15 +979,20 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
         />
       ) : null}
 
-      <main className="mx-auto max-w-5xl px-4 py-8 lg:px-6 lg:py-10">
-        <section className="space-y-5">
-          <div className="flex flex-wrap gap-2">
-            {focusChips.map((chip) => (
-              <InfoChip key={chip}>{chip}</InfoChip>
+      <main className="mx-auto max-w-4xl px-5 py-6 lg:py-10">
+        <section className="space-y-4">
+          {/* Stats bar */}
+          <div className="flex items-center gap-4 text-sm tabular-nums text-[color:var(--muted)]">
+            {focusChips.map((chip, index) => (
+              <span key={chip} className="flex items-center gap-1.5">
+                {index > 0 && <span className="text-[color:var(--line)]">|</span>}
+                {chip}
+              </span>
             ))}
           </div>
 
-          <section className="rounded-[2.2rem] border border-[color:var(--line)] bg-[image:var(--card-bg-strong)] px-5 py-5 shadow-[0_28px_90px_rgba(30,18,12,0.10)] sm:px-7 sm:py-6">
+          {/* Main typing card */}
+          <section className="overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--card-bg-soft)]">
             {loadStatus === 'loading' ? (
               <StatusPanel tone="neutral">{t('typing.statusLoading')}</StatusPanel>
             ) : null}
@@ -1007,13 +1011,13 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
             {loadStatus === 'ready' && sessionState === 'prompt' && resumeDraft ? (
               <StatusPanelCard>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
+                <p className="text-sm font-medium text-[color:var(--accent)]">
                   {t('typing.resume.title')}
                 </p>
-                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+                <p className="mt-2 text-sm text-[color:var(--muted)]">
                   {t('typing.resume.body')}
                 </p>
-                <div className="mt-5 flex flex-wrap gap-3">
+                <div className="mt-4 flex items-center gap-3">
                   <PrimaryActionButton onClick={handleContinueDraft}>
                     {t('typing.resume.continueAction')}
                   </PrimaryActionButton>
@@ -1026,20 +1030,14 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
             {loadStatus === 'ready' && (sessionState === 'active' || sessionState === 'completed') ? (
               <>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--line)] pb-4">
-                  <div className="min-w-0 flex-1">
-                    <h1 className="truncate text-[clamp(1.5rem,3vw,2.4rem)] [font-family:var(--font-display)] text-[color:var(--foreground)]">
-                      {selectedWork?.title ?? workId}
-                    </h1>
-                    <p className="mt-2 text-sm leading-7 text-[color:var(--muted)]">
-                      {t('typing.focusHint')}
-                    </p>
+                {/* Toolbar inside card */}
+                <div className="flex items-center justify-between gap-3 border-b border-[color:var(--line)] px-5 py-3">
+                  <div className="flex items-center gap-2 text-xs text-[color:var(--muted)]">
+                    <span>{modeLabel}</span>
+                    <span>·</span>
+                    <span>{autosaveLabel}</span>
                   </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <SecondaryActionButton onClick={() => textareaRef.current?.focus()}>
-                      {t('typing.startTyping')}
-                    </SecondaryActionButton>
+                  <div className="flex items-center gap-2">
                     {sessionState === 'active' ? (
                       <PrimaryActionButton
                         onClick={handleAdvance}
@@ -1051,6 +1049,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                   </div>
                 </div>
 
+                {/* Typing area */}
                 <div
                   role="button"
                   tabIndex={0}
@@ -1061,7 +1060,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       textareaRef.current?.focus();
                     }
                   }}
-                  className="mt-5 relative cursor-text overflow-hidden rounded-[2rem] bg-[color:#15110e] px-5 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-[rgba(255,255,255,0.05)] sm:px-7 sm:py-7"
+                  className="relative cursor-text bg-[#1c1917] px-6 py-8 sm:px-8 sm:py-10"
                 >
                   <textarea
                     ref={textareaRef}
@@ -1078,19 +1077,13 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                     aria-label={t('typing.startTyping')}
                   />
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[rgba(255,255,255,0.06)] pb-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <InfoChip tone="dark">{modeLabel}</InfoChip>
-                      <InfoChip tone="dark">{autosaveLabel}</InfoChip>
-                    </div>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--typing-ghost)]">
-                      {sessionState === 'completed'
-                        ? t('typing.actions.completed')
-                        : t('typing.clickToFocus')}
-                    </p>
-                  </div>
+                  <p className="mb-6 text-xs text-[#78716c]">
+                    {sessionState === 'completed'
+                      ? t('typing.actions.completed')
+                      : t('typing.clickToFocus')}
+                  </p>
 
-                  <div className="relative mt-5 min-h-[22rem] sm:min-h-[28rem]">
+                  <div className="relative min-h-[20rem] sm:min-h-[26rem]">
                     <pre className={`pointer-events-none whitespace-pre-wrap break-words ${fontSizeClassName} text-[color:var(--typing-ghost)]`}>
                       {currentParagraph}
                     </pre>
@@ -1100,31 +1093,35 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {compactRules.map((rule) => (
-                    <InfoChip key={rule}>{rule}</InfoChip>
+                {/* Rules */}
+                <div className="flex items-center gap-3 border-t border-[color:var(--line)] px-5 py-3 text-xs text-[color:var(--muted)]">
+                  {compactRules.map((rule, index) => (
+                    <span key={rule} className="flex items-center gap-2">
+                      {index > 0 && <span className="text-[color:var(--line)]">·</span>}
+                      {rule}
+                    </span>
                   ))}
                 </div>
 
                 {storageNotice ? (
-                  <div className="mt-4 rounded-[1.2rem] border border-[rgba(222,110,100,0.22)] bg-[rgba(222,110,100,0.08)] px-4 py-3 text-sm leading-7 text-[color:var(--foreground)]">
+                  <div className="border-t border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">
                     {storageNotice}
                   </div>
                 ) : null}
 
                 {sessionState === 'completed' ? (
-                  <section className="mt-6 rounded-[1.8rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
+                  <section className="border-t border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5">
+                    <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
+                        <p className="text-sm font-medium text-[color:var(--accent)]">
                           {t('typing.panel.resultTitle')}
                         </p>
-                        <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+                        <p className="mt-1 text-sm text-[color:var(--muted)]">
                           {resultStatusMessage}
                         </p>
                       </div>
 
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
                         {resultStatus === 'error' ? (
                           <SecondaryActionButton onClick={() => void handleRetrySaveResult()}>
                             {t('typing.actions.retrySave')}
@@ -1138,7 +1135,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       </div>
                     </div>
 
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                       <ResultMetric
                         label={t('typing.stats.accuracy')}
                         value={finalAccuracy === null ? '—' : `${finalAccuracy}%`}
@@ -1157,16 +1154,16 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       />
                     </div>
 
-                    <div className="mt-5 border-t border-[color:var(--line)] pt-4">
+                    <div className="mt-4 border-t border-[color:var(--line)] pt-4">
                       <div className="flex items-center justify-between gap-4">
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
+                        <p className="text-xs font-medium text-[color:var(--muted)]">
                           {t('typing.panel.summaryTitle')}
                         </p>
-                        <p className="text-sm text-[color:var(--muted)]">
+                        <p className="text-xs text-[color:var(--muted)]">
                           {t('typing.stats.done')}: {summaryReports.length}
                         </p>
                       </div>
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="mt-2 flex flex-wrap gap-1.5">
                         {summaryReports.length === 0 ? (
                           <p className="text-sm text-[color:var(--muted)]">
                             {t('typing.panel.summaryEmpty')}
@@ -1192,78 +1189,80 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       </main>
 
       {pendingParagraphReport ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(9,7,6,0.48)] px-4 pb-6 pt-20 backdrop-blur-sm">
-          <section className="w-full max-w-4xl rounded-[2rem] border border-[color:var(--line)] bg-[color:var(--page-bg)] p-6 shadow-[0_30px_100px_rgba(14,10,7,0.28)]">
-            <div className="flex flex-col gap-4 border-b border-[color:var(--line)] pb-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-4 pb-6 pt-20 backdrop-blur-sm">
+          <section className="w-full max-w-3xl overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--page-bg)] shadow-2xl">
+            <div className="flex items-start justify-between gap-4 border-b border-[color:var(--line)] p-6">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
+                <p className="text-sm font-medium text-[color:var(--accent)]">
                   {t('typing.report.title')}
                 </p>
-                <h2 className="mt-3 text-3xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+                <h2 className="mt-2 text-2xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
                   {t('typing.stats.paragraph')} {pendingParagraphReport.paragraph.paragraphIndex + 1}
                 </h2>
-                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+                <p className="mt-2 text-sm text-[color:var(--muted)]">
                   {t('typing.report.subtitle')}
                 </p>
               </div>
 
-              <div className="rounded-[1.4rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-4 text-right">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
+              <div className="rounded-xl bg-[color:var(--card-bg-soft-strong)] px-4 py-3 text-right">
+                <p className="text-xs text-[color:var(--muted)]">
                   {t('typing.report.typoCount')}
                 </p>
-                <p className="mt-2 text-3xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+                <p className="mt-1 text-2xl font-light tabular-nums text-[color:var(--foreground)]">
                   {pendingParagraphReport.paragraph.typoCount}
                 </p>
               </div>
             </div>
 
-            {pendingParagraphReport.paragraph.mismatchSegments.length === 0 ? (
-              <div className="mt-6 rounded-[1.6rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-10 text-center">
-                <h3 className="text-2xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
-                  {t('typing.report.cleanTitle')}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
-                  {t('typing.report.cleanBody')}
-                </p>
-              </div>
-            ) : (
-              <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                {pendingParagraphReport.paragraph.mismatchSegments.map((segment) => (
-                  <article
-                    key={`${segment.start}-${segment.end}`}
-                    className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5"
-                  >
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--accent)]">
-                      {segment.start === segment.end
-                        ? t('typing.report.mismatchRangeSingle', {
-                            start: segment.start + 1,
-                          })
-                        : t('typing.report.mismatchRangeMulti', {
-                            start: segment.start + 1,
-                            end: segment.end + 1,
-                          })}
-                    </p>
-                    <div className="mt-4 space-y-3">
-                      <MismatchValue
-                        label={t('typing.report.expectedLabel')}
-                        value={segment.expected}
-                      />
-                      <MismatchValue
-                        label={t('typing.report.actualLabel')}
-                        value={segment.actual}
-                        emptyLabel={t('typing.report.emptyActual')}
-                      />
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
+            <div className="max-h-[50vh] overflow-y-auto p-6">
+              {pendingParagraphReport.paragraph.mismatchSegments.length === 0 ? (
+                <div className="rounded-xl bg-[color:var(--card-bg-soft-strong)] px-5 py-10 text-center">
+                  <h3 className="text-xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+                    {t('typing.report.cleanTitle')}
+                  </h3>
+                  <p className="mt-2 text-sm text-[color:var(--muted)]">
+                    {t('typing.report.cleanBody')}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {pendingParagraphReport.paragraph.mismatchSegments.map((segment) => (
+                    <article
+                      key={`${segment.start}-${segment.end}`}
+                      className="rounded-xl border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-4"
+                    >
+                      <p className="text-xs font-medium text-[color:var(--accent)]">
+                        {segment.start === segment.end
+                          ? t('typing.report.mismatchRangeSingle', {
+                              start: segment.start + 1,
+                            })
+                          : t('typing.report.mismatchRangeMulti', {
+                              start: segment.start + 1,
+                              end: segment.end + 1,
+                            })}
+                      </p>
+                      <div className="mt-3 space-y-2">
+                        <MismatchValue
+                          label={t('typing.report.expectedLabel')}
+                          value={segment.expected}
+                        />
+                        <MismatchValue
+                          label={t('typing.report.actualLabel')}
+                          value={segment.actual}
+                          emptyLabel={t('typing.report.emptyActual')}
+                        />
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <div className="flex justify-end border-t border-[color:var(--line)] px-6 py-4">
               <button
                 type="button"
                 onClick={handleConfirmParagraphReport}
-                className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-strong)]"
+                className="inline-flex items-center rounded-lg bg-[color:var(--foreground)] px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
               >
                 {pendingParagraphReport.isLastParagraph
                   ? t('typing.actions.finishSession')
@@ -1275,33 +1274,31 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
       ) : null}
 
       {isSettingsPanelOpen ? (
-        <div className="fixed inset-0 z-40 flex justify-end bg-[rgba(9,7,6,0.48)] backdrop-blur-sm">
+        <div className="fixed inset-0 z-40 flex justify-end bg-black/30 backdrop-blur-sm">
           <button
             type="button"
             aria-label={t('typing.settings.close')}
             className="flex-1 cursor-default"
             onClick={() => setSettingsPanelOpen(false)}
           />
-          <aside className="w-full max-w-md border-l border-[color:var(--line)] bg-[color:var(--page-bg)] p-6 shadow-[-24px_0_70px_rgba(11,8,6,0.18)]">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
-                  {t('typing.settings.title')}
-                </p>
-                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
-                  {t('typing.settings.description')}
-                </p>
-              </div>
+          <aside className="w-full max-w-sm overflow-y-auto border-l border-[color:var(--line)] bg-[color:var(--page-bg)] shadow-2xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[color:var(--line)] bg-[color:var(--page-bg)] px-5 py-4">
+              <h2 className="text-sm font-medium text-[color:var(--foreground)]">
+                {t('typing.settings.title')}
+              </h2>
               <button
                 type="button"
                 onClick={() => setSettingsPanelOpen(false)}
-                className="inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-4 py-2 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+                className="rounded-lg p-1.5 text-[color:var(--muted)] transition hover:bg-[color:var(--card-bg-soft-strong)] hover:text-[color:var(--foreground)]"
               >
-                {t('typing.settings.close')}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 
-            <div className="mt-8 space-y-6">
+            <div className="space-y-5 p-5">
               <SettingsSection
                 title={t('typing.settings.sections.display')}
                 description={t('typing.settings.displayDescription')}
@@ -1561,7 +1558,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
               </SettingsSection>
             </div>
 
-            <div className="mt-8 rounded-[1.4rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-4 text-sm leading-7 text-[color:var(--muted)]">
+            <div className="rounded-lg bg-[color:var(--card-bg-soft-strong)] px-4 py-3 text-xs text-[color:var(--muted)]">
               {settingsStatus === 'saving'
                 ? t('typing.settings.saving')
                 : settingsMessage ?? t('typing.settings.idle')}
@@ -1580,14 +1577,13 @@ function StatusPanel({
   children: ReactNode;
   tone: 'neutral' | 'danger';
 }) {
-  const toneClassName =
-    tone === 'danger'
-      ? 'border-[rgba(161,68,49,0.22)] bg-[rgba(161,68,49,0.08)] text-[color:var(--foreground)]'
-      : 'border-[color:var(--line)] bg-[color:var(--card-bg-soft)] text-[color:var(--muted)]';
-
   return (
     <div
-      className={`mt-6 rounded-[1.6rem] border px-5 py-10 text-center text-sm ${toneClassName}`}
+      className={`px-5 py-10 text-center text-sm ${
+        tone === 'danger'
+          ? 'bg-red-50 text-red-700'
+          : 'text-[color:var(--muted)]'
+      }`}
     >
       {children}
     </div>
@@ -1596,7 +1592,7 @@ function StatusPanel({
 
 function StatusPanelCard({ children }: { children: ReactNode }) {
   return (
-    <div className="mt-6 rounded-[1.8rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5 shadow-[0_20px_70px_rgba(32,19,13,0.08)]">
+    <div className="p-6">
       {children}
     </div>
   );
@@ -1604,11 +1600,9 @@ function StatusPanelCard({ children }: { children: ReactNode }) {
 
 function ResultMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-4 py-4">
-      <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
-        {label}
-      </p>
-      <p className="mt-2 text-2xl [font-family:var(--font-display)] text-[color:var(--foreground)]">
+    <div className="rounded-lg bg-[color:var(--card-bg-soft-strong)] px-3 py-3">
+      <p className="text-xs text-[color:var(--muted)]">{label}</p>
+      <p className="mt-1 text-lg font-medium tabular-nums text-[color:var(--foreground)]">
         {value}
       </p>
     </div>
@@ -1617,19 +1611,11 @@ function ResultMetric({ label, value }: { label: string; value: string }) {
 
 function InfoChip({
   children,
-  tone = 'light',
 }: {
   children: ReactNode;
-  tone?: 'light' | 'dark';
 }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs leading-6 ${
-        tone === 'dark'
-          ? 'border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] text-[color:#d9c9bd]'
-          : 'border-[color:var(--line)] bg-[color:var(--card-bg-soft)] text-[color:var(--muted)]'
-      }`}
-    >
+    <span className="inline-flex items-center rounded-md bg-[color:var(--card-bg-soft-strong)] px-2 py-1 text-xs text-[color:var(--muted)]">
       {children}
     </span>
   );
@@ -1649,7 +1635,7 @@ function PrimaryActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex items-center justify-center rounded-full bg-[color:var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:enabled:bg-[color:var(--accent-strong)] disabled:cursor-not-allowed disabled:bg-[rgba(161,68,49,0.35)]"
+      className="inline-flex items-center rounded-lg bg-[color:var(--foreground)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-30"
     >
       {children}
     </button>
@@ -1668,7 +1654,7 @@ function SecondaryActionButton({
   onClick?: () => void;
 }) {
   const className =
-    'inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] px-5 py-2.5 text-sm font-semibold text-[color:var(--foreground)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]';
+    'inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-[color:var(--muted)] transition hover:bg-[color:var(--card-bg-soft-strong)] hover:text-[color:var(--foreground)]';
 
   if (asLink && href) {
     return (
@@ -1695,12 +1681,12 @@ function SettingsSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[1.6rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-5">
-      <p className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
+    <section className="rounded-xl border border-[color:var(--line)] bg-[color:var(--card-bg-soft)] p-4">
+      <p className="text-xs font-medium text-[color:var(--foreground)]">
         {title}
       </p>
-      <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">{description}</p>
-      <div className="mt-5 space-y-5">{children}</div>
+      <p className="mt-1 text-xs text-[color:var(--muted)]">{description}</p>
+      <div className="mt-4 space-y-4">{children}</div>
     </section>
   );
 }
@@ -1708,10 +1694,8 @@ function SettingsSection({
 function SettingGroup({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
-        {label}
-      </p>
-      <div className="mt-3 flex flex-wrap gap-2">{children}</div>
+      <p className="text-xs text-[color:var(--muted)]">{label}</p>
+      <div className="mt-2 flex flex-wrap gap-1.5">{children}</div>
     </div>
   );
 }
@@ -1726,10 +1710,10 @@ function SettingRow({
   action: ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft-strong)] p-4">
+    <div className="flex items-start justify-between gap-3 rounded-lg bg-[color:var(--card-bg-soft-strong)] p-3">
       <div>
-        <p className="text-sm font-semibold text-[color:var(--foreground)]">{title}</p>
-        <p className="mt-2 text-sm leading-7 text-[color:var(--muted)]">{body}</p>
+        <p className="text-sm font-medium text-[color:var(--foreground)]">{title}</p>
+        <p className="mt-1 text-xs text-[color:var(--muted)]">{body}</p>
       </div>
       {action}
     </div>
@@ -1749,10 +1733,10 @@ function OptionChip({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition ${
+      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
         active
-          ? 'border-[color:var(--accent)] bg-[rgba(161,68,49,0.08)] text-[color:var(--accent)]'
-          : 'border-[color:var(--line)] bg-[color:var(--card-bg-soft)] text-[color:var(--foreground)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]'
+          ? 'bg-[color:var(--foreground)] text-white'
+          : 'text-[color:var(--muted)] hover:bg-[color:var(--card-bg-soft-strong)] hover:text-[color:var(--foreground)]'
       }`}
     >
       {label}
@@ -1778,12 +1762,11 @@ function FilterSlider({
   onChange: (value: number) => void;
 }) {
   return (
-    <label className="block rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft-strong)] p-4">
+    <label className="block rounded-lg bg-[color:var(--card-bg-soft-strong)] p-3">
       <div className="flex items-center justify-between gap-4">
-        <span className="text-sm font-semibold text-[color:var(--foreground)]">{label}</span>
-        <span className="text-sm text-[color:var(--muted)]">
-          {value}
-          {suffix}
+        <span className="text-sm text-[color:var(--foreground)]">{label}</span>
+        <span className="text-xs tabular-nums text-[color:var(--muted)]">
+          {value}{suffix}
         </span>
       </div>
       <input
@@ -1793,7 +1776,7 @@ function FilterSlider({
         step={step}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-4 block w-full accent-[color:var(--accent)]"
+        className="mt-3 block w-full accent-[color:var(--accent)]"
       />
     </label>
   );
@@ -1811,11 +1794,9 @@ function MismatchValue({
   const visibleValue = value.length > 0 ? formatVisibleText(value) : emptyLabel ?? '';
 
   return (
-    <div className="rounded-[1.1rem] border border-[color:var(--line)] bg-[color:var(--card-bg-soft-strong)] p-4">
-      <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
-        {label}
-      </p>
-      <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-[color:var(--foreground)]">
+    <div className="rounded-lg bg-[color:var(--card-bg-soft-strong)] p-3">
+      <p className="text-xs text-[color:var(--muted)]">{label}</p>
+      <pre className="mt-1.5 whitespace-pre-wrap break-words text-sm leading-relaxed text-[color:var(--foreground)]">
         {visibleValue}
       </pre>
     </div>

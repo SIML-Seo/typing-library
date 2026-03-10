@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useAppLocale } from '@/components/I18nClientProvider';
 import { usePathname } from 'next/navigation';
-import { useI18n } from '@/locales/client';
 import {
   DEFAULT_LOCALE,
   LOCALE_LABELS,
@@ -13,7 +12,6 @@ import {
 } from '@/locales/config';
 
 export default function LocaleSwitcher() {
-  const t = useI18n();
   const currentLocale = useAppLocale();
   const pathname = usePathname();
   const basePath = stripLocalePrefix(pathname);
@@ -21,14 +19,15 @@ export default function LocaleSwitcher() {
 
   return (
     <details className="group relative">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.72)] px-4 py-2 text-sm text-[color:var(--foreground)] marker:hidden">
-        <span className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--muted)]">
-          {t('common.language')}
-        </span>
+      <summary className="flex cursor-pointer list-none items-center gap-1.5 rounded-lg border border-[color:var(--line)] px-3 py-1.5 text-sm text-[color:var(--muted)] transition hover:border-[color:var(--foreground)] hover:text-[color:var(--foreground)] marker:hidden">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
         <span>{currentValue}</span>
       </summary>
 
-      <div className="absolute right-0 z-40 mt-3 min-w-52 rounded-[1.25rem] border border-[color:var(--line)] bg-[color:rgba(255,255,255,0.96)] p-2 shadow-[0_20px_60px_rgba(41,25,18,0.14)]">
+      <div className="absolute right-0 z-40 mt-2 min-w-48 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] p-1.5 shadow-lg shadow-black/[0.06]">
         {SUPPORTED_LOCALES.map((locale) => {
           const href = getLocalizedPath(locale, basePath);
           const isActive = locale === currentLocale;
@@ -37,14 +36,14 @@ export default function LocaleSwitcher() {
             <Link
               key={locale}
               href={href}
-              className={`flex items-center justify-between rounded-[1rem] px-3 py-2 text-sm transition ${
+              className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm transition ${
                 isActive
-                  ? 'bg-[rgba(161,68,49,0.10)] text-[color:var(--accent)]'
-                  : 'text-[color:var(--foreground)] hover:bg-[rgba(29,22,17,0.04)]'
+                  ? 'bg-[color:var(--accent-soft)] text-[color:var(--accent)]'
+                  : 'text-[color:var(--foreground)] hover:bg-[color:var(--surface-sunken)]'
               }`}
             >
               <span>{LOCALE_LABELS[locale]}</span>
-              <span className="text-[11px] uppercase tracking-[0.18em] text-[color:var(--muted)]">
+              <span className="text-xs text-[color:var(--muted)]">
                 {locale}
               </span>
             </Link>
