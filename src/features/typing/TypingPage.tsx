@@ -120,6 +120,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   const [elapsedTimeMs, setElapsedTimeMs] = useState(0);
   const [pendingParagraphReport, setPendingParagraphReport] =
     useState<PendingParagraphReportState | null>(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const elapsedBaseMsRef = useRef(0);
   const activeStartedAtMsRef = useRef<number | null>(null);
@@ -212,8 +213,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
           : 'none',
         '--card-bg-soft': isDarkTheme ? 'rgba(28,23,19,0.76)' : '#ffffff',
         '--card-bg-soft-strong': isDarkTheme ? 'rgba(255,255,255,0.04)' : 'var(--surface-sunken)',
-        '--typing-ghost': isDarkTheme ? '#57534e' : '#a1a1aa',
-        '--typing-ok': isDarkTheme ? '#fafaf9' : '#1a1a1a',
+        '--typing-ghost': isDarkTheme ? '#4c4641' : '#8b8682',
+        '--typing-ok': isDarkTheme ? '#ffffff' : '#fffdf8',
         '--typing-error': '#ef4444',
       }) as CSSProperties,
     [isDarkTheme],
@@ -678,7 +679,9 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
 
   useEffect(() => {
     if (loadStatus === 'ready' && sessionState === 'active') {
-      textareaRef.current?.focus();
+      window.requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+      });
     }
   }, [loadStatus, paragraphIndex, sessionState]);
 
@@ -838,10 +841,6 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
   }
 
   function renderOverlay(reference: string, typed: string) {
-    if (typed.length === 0) {
-      return null;
-    }
-
     const nodes: ReactNode[] = [];
 
     for (let index = 0; index < typed.length; index += 1) {
@@ -860,14 +859,24 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
           key={key}
           className={
             isCorrect
-              ? 'text-[color:var(--typing-ok)]'
+              ? 'font-semibold text-[color:var(--typing-ok)] [text-shadow:0_0_0.4px_currentColor]'
               : settingsSnapshot.typoDisplayMode === 'underline-red'
-                ? 'text-[color:var(--typing-ok)] underline decoration-[color:var(--typing-error)] decoration-2 underline-offset-[0.18em]'
-                : 'text-[color:var(--typing-error)]'
+                ? 'font-semibold text-[color:var(--typing-ok)] underline decoration-[color:var(--typing-error)] decoration-2 underline-offset-[0.18em] [text-shadow:0_0_0.4px_currentColor]'
+                : 'font-semibold text-[color:var(--typing-error)] [text-shadow:0_0_0.4px_currentColor]'
           }
         >
           {character === ' ' ? '\u00A0' : character}
         </span>,
+      );
+    }
+
+    if (sessionState === 'active' && pendingParagraphReport === null) {
+      nodes.push(
+        <span
+          key="caret"
+          aria-hidden="true"
+          className="ml-[0.02em] inline-block h-[1.05em] w-[2px] animate-pulse rounded-full bg-[color:var(--typing-ok)] align-[-0.15em] shadow-[0_0_12px_rgba(255,255,255,0.45)]"
+        />,
       );
     }
 
@@ -1051,12 +1060,16 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                 {/* Typing area */}
                 <div
                   onClick={() => textareaRef.current?.focus()}
-                  className="relative cursor-text bg-[#1c1917] px-6 py-8 sm:px-8 sm:py-10"
+                  className={`relative cursor-text bg-[#1c1917] px-6 py-8 sm:px-8 sm:py-10 ${
+                    isInputFocused
+                      ? 'ring-2 ring-[rgba(255,255,255,0.12)]'
+                      : 'ring-1 ring-[rgba(255,255,255,0.04)]'
+                  }`}
                 >
                   <p className="mb-6 text-xs text-[#78716c]">
                     {sessionState === 'completed'
                       ? t('typing.actions.completed')
-                      : t('typing.clickToFocus')}
+                      : ''}
                   </p>
 
                   <div className="relative min-h-[20rem] sm:min-h-[26rem]">
@@ -1068,6 +1081,8 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       onPaste={(event) => event.preventDefault()}
                       onDrop={(event) => event.preventDefault()}
                       onKeyDownCapture={(event) => event.stopPropagation()}
+                      onFocus={() => setIsInputFocused(true)}
+                      onBlur={() => setIsInputFocused(false)}
                       spellCheck={false}
                       autoCapitalize="off"
                       autoCorrect="off"
@@ -1075,7 +1090,7 @@ export default function TypingPage({ workId, workKind = 'public' }: TypingPagePr
                       aria-label={t('typing.startTyping')}
                       className={`absolute inset-0 z-10 h-full w-full resize-none overflow-hidden border-0 bg-transparent p-0 opacity-0 ${fontSizeClassName} outline-none`}
                     />
-                    <pre className={`pointer-events-none whitespace-pre-wrap break-words ${fontSizeClassName} text-[color:var(--typing-ghost)]`}>
+                    <pre className={`pointer-events-none whitespace-pre-wrap break-words ${fontSizeClassName} text-[color:var(--typing-ghost)] opacity-60`}>
                       {currentParagraph}
                     </pre>
                     <pre className={`pointer-events-none absolute inset-0 whitespace-pre-wrap break-words ${fontSizeClassName}`}>
